@@ -108,7 +108,11 @@ namespace SdtdMultiServerKit.Hooks
 
             foreach (XmlNode item in xmlNodeList)
             {
-                var xmlElement = (XmlElement)item;
+                if (item is not XmlElement xmlElement)
+                {
+                    continue;
+                }
+
                 string itemName = xmlElement.GetAttribute("name");
                 string tag = TagPrefix + itemName;
 

@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.0.10] - 2026-06-30
+
+### Fixed
+
+- **7DTD V2.6** — Skip non-element XML nodes in `WorldStaticDataHook.AttachTags` (whitespace/text nodes caused `InvalidCastException` on game start).
+
 ## [1.0.9] - 2026-06-30
 
 ### Fixed
