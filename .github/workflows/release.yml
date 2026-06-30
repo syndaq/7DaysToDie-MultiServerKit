@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -27,7 +28,16 @@ jobs:
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           ARCHIVE="SdtdMultiServerKit-${VERSION}.zip"
-          cd src/SdtdMultiServerKit/bin/Release/net48
+          BUILD_DIR="src/SdtdMultiServerKit/bin/Release/net48"
+          if [[ ! -d "$BUILD_DIR" ]]; then
+            BUILD_DIR="src/SdtdMultiServerKit/bin/x64/Release/net48"
+          fi
+          if [[ ! -d "$BUILD_DIR" ]]; then
+            echo "Build output not found" >&2
+            find src/SdtdMultiServerKit/bin -maxdepth 4 -type d
+            exit 1
+          fi
+          cd "$BUILD_DIR"
           zip -r "${GITHUB_WORKSPACE}/${ARCHIVE}" . -x "*.pdb"
           echo "ARCHIVE=${ARCHIVE}" >> "${GITHUB_ENV}"
 

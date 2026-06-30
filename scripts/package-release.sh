@@ -19,14 +19,17 @@ dotnet build "$PROJECT" -c Release --no-incremental
 
 BUILD_DIR="$ROOT/src/SdtdMultiServerKit/bin/Release/net48"
 if [[ ! -d "$BUILD_DIR" ]]; then
-  echo "Build output not found at $BUILD_DIR" >&2
+  BUILD_DIR="$ROOT/src/SdtdMultiServerKit/bin/x64/Release/net48"
+fi
+if [[ ! -d "$BUILD_DIR" ]]; then
+  echo "Build output not found under bin/Release/net48 or bin/x64/Release/net48" >&2
   exit 1
 fi
 
 mkdir -p "$OUTPUT_DIR"
 rm -f "$ARCHIVE"
 
-echo "Packaging $ARCHIVE..."
+echo "Packaging $ARCHIVE from $BUILD_DIR..."
 (
   cd "$BUILD_DIR"
   zip -r "$ARCHIVE" . -x "*.pdb"
