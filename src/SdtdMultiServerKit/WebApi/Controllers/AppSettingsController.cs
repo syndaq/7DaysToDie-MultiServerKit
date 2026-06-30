@@ -15,9 +15,10 @@ namespace SdtdMultiServerKit.WebApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("")]
-        public AppSettings Get()
+        [ResponseType(typeof(AppSettingsPublic))]
+        public AppSettingsPublic Get()
         {
-            return ModApi.AppSettings;
+            return AppSettingsPublic.FromAppSettings(ModApi.AppSettings);
         }
 
         /// <summary>
@@ -28,10 +29,26 @@ namespace SdtdMultiServerKit.WebApi.Controllers
         [Route("")]
         public IHttpActionResult Put([FromBody] AppSettings appSettings)
         {
-            string json = JsonConvert.SerializeObject(appSettings);
-            string path = Path.Combine(ModApi.ModInstance.Path, "appsettings.json");
+            if (ModApi.AppSettings.ApiOnly)
+            {
+                appSettings.PanelApiKey = ModApi.AppSettings.PanelApiKey;
+                appSettings.UserName = ModApi.AppSettings.UserName;
+                appSettings.Password = ModApi.AppSettings.Password;
+            }
+
+            ValidateAppSettings(appSettings);
+            string json = JsonConvert.SerializeObject(appSettings, ModApi.JsonSerializerSettings);
+            string path = Path.Combine(ModApi.ModInstance.Path, "Config", "appsettings.json");
             File.WriteAllText(path, json, Encoding.UTF8);
-            return Ok();
+            return Ok(AppSettingsPublic.FromAppSettings(appSettings));
+        }
+
+        private static void ValidateAppSettings(AppSettings appSettings)
+        {
+            if (appSettings.ApiOnly && string.IsNullOrWhiteSpace(appSettings.PanelApiKey))
+            {
+                throw new ArgumentException("PanelApiKey is required when ApiOnly is enabled.");
+            }
         }
     }
 }

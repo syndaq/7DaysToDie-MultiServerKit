@@ -221,12 +221,27 @@ namespace SdtdMultiServerKit
                 }
                 else
                 {
+                    ValidateAppSettings(appSettings);
                     AppSettings = appSettings;
                 }
             }
             catch (Exception ex)
             {
                 throw new Exception("Load appsettings failed.", ex);
+            }
+        }
+
+        private static void ValidateAppSettings(AppSettings appSettings)
+        {
+            if (appSettings.ApiOnly && string.IsNullOrWhiteSpace(appSettings.PanelApiKey))
+            {
+                throw new Exception("PanelApiKey is required when ApiOnly is enabled.");
+            }
+
+            if (appSettings.ApiOnly == false
+                && (string.IsNullOrWhiteSpace(appSettings.UserName) || string.IsNullOrWhiteSpace(appSettings.Password)))
+            {
+                throw new Exception("UserName and Password are required when ApiOnly is disabled.");
             }
         }
 
@@ -237,7 +252,7 @@ namespace SdtdMultiServerKit
             {
                 string webUrl = AppSettings.WebUrl;
                 WebApp.Start<Startup>(webUrl);
-                CustomLogger.Info("SdtdMultiServerKit Web App Server running on " + webUrl);
+                CustomLogger.Info("SdtdMultiServerKit API Server running on " + webUrl);
             }
             catch (Exception ex)
             {

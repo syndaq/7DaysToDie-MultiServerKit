@@ -15,6 +15,8 @@ using Autofac.Integration.WebApi;
 using SdtdMultiServerKit.WebApi.DataProtection;
 using SdtdMultiServerKit.WebApi.Middlewares;
 using System.Web.Http.Dispatcher;
+using System.Web.Http.Filters;
+using Microsoft.Owin.Security;
 
 namespace SdtdMultiServerKit.WebApi
 {
@@ -39,6 +41,8 @@ namespace SdtdMultiServerKit.WebApi
         /// <param name="app"></param>
         public void Configuration(IAppBuilder app)
         {
+            bool apiOnly = ModApi.AppSettings.ApiOnly;
+
             // Configure Web API for self-host.
             var config = new HttpConfiguration()
             {
@@ -57,6 +61,12 @@ namespace SdtdMultiServerKit.WebApi
             //config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html")); // Default return json
             config.Filters.Add(new ValidateModelAttribute());
 
+            if (apiOnly)
+            {
+                config.SuppressDefaultHostAuthentication();
+                config.Filters.Add(new HostAuthenticationFilter(PanelApiKeyAuthenticationMiddleware.AuthenticationType));
+            }
+
             app.Use(async (context, next) =>
             {
                 try
@@ -69,78 +79,16 @@ namespace SdtdMultiServerKit.WebApi
                 }
             });
 
-            app.Use<SteamReturnMiddleware>();
-
-            string webRootPath = Path.Combine(ModApi.ModInstance.Path, "wwwroot");
-            if (Directory.Exists(webRootPath))
+            if (apiOnly)
             {
-                var fileSystem = new PhysicalFileSystem(webRootPath);
-                // Serve the default file, if present.
-                app.UseDefaultFiles(new DefaultFilesOptions()
-                {
-                    DefaultFileNames = new string[] { "index.html" },
-                    FileSystem = fileSystem,
-                    RequestPath = PathString.Empty
-                });
-                // Serve static files.
-                app.UseStaticFiles(new StaticFileOptions()
-                {
-                    FileSystem = fileSystem,
-                    RequestPath = PathString.Empty
-                });
+                ConfigureApiOnlyMode(app, config);
+            }
+            else
+            {
+                ConfigureLegacyPanelMode(app, config);
             }
 
-            app.UseSwaggerUi(ModApi.LoadedPlugins, settings =>
-            {
-                // configure settings here
-                // settings.GeneratorSettings.*: Generator settings and extension points
-                // settings.*: Routing and UI settings
-
-                // Can be configured to load from XML comment files, But loaded content can be OpenApiTagAttribute 
-                settings.GeneratorSettings.UseControllerSummaryAsTagDescription = true;
-                settings.GeneratorSettings.OperationProcessors.Add(new SdtdMultiServerKit.WebApi.OperationSecurityScopeProcessor("JWT Token"));
-                settings.GeneratorSettings.DocumentProcessors.Add(new SecurityDefinitionAppender("JWT Token",
-                    new OpenApiSecurityScheme()
-                    {
-                        Type = OpenApiSecuritySchemeType.ApiKey,
-                        Name = "Authorization",
-                        Description = "Copy 'Bearer ' + valid JWT token into field",
-                        In = OpenApiSecurityApiKeyLocation.Header,
-                    }));
-                settings.GeneratorSettings.ApplySettings(new NewtonsoftJsonSchemaGeneratorSettings { SerializerSettings = ModApi.JsonSerializerSettings, SchemaType = SchemaType.OpenApi3 }, null);
-                settings.PostProcess = (document) =>
-                {
-                    document.Info.Version = "v1";
-                    document.Info.Title = "7DaysToDie-MultiServerKit RESTful APIs Documentation";
-                    document.Info.Description = "RESTful APIs Documentation for 7 Days to Die dedicated servers.";
-                    document.Info.TermsOfService = "https://7dtd.top";
-                    document.Info.Contact = new OpenApiContact()
-                    {
-                        Name = "syndaq",
-                        Url = "https://github.com/syndaq"
-                    };
-                    document.Info.License = new OpenApiLicense()
-                    {
-                        Name = "LICENSE",
-                        Url = "https://github.com/syndaq/7DaysToDie-MultiServerKit/blob/main/README.md"
-                    };
-
-                    AddOAuthTokenEndpointApiSchema(document);
-                };
-            });
-
             app.SetDataProtectionProvider(new CustomDataProtectionProvider());
-            // Token Generation
-            app.UseOAuthAuthorizationServer(new OAuthAuthorizationServerOptions()
-            {
-                AllowInsecureHttp = true,
-                TokenEndpointPath = new PathString(OAuthTokenEndpointPath),
-                AccessTokenExpireTimeSpan = TimeSpan.FromSeconds(ModApi.AppSettings.AccessTokenExpireTime),
-                Provider = new CustomOAuthProvider(),
-                RefreshTokenProvider = new CustomRefreshTokenProvider()
-            });
-
-            app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
 
             app.Use(async (context, next) =>
             {
@@ -172,6 +120,117 @@ namespace SdtdMultiServerKit.WebApi
             config.Services.Replace(typeof(IHttpControllerTypeResolver), new CustomHttpControllerTypeResolver());
 
             config.EnsureInitialized();
+        }
+
+        private static void ConfigureApiOnlyMode(IAppBuilder app, HttpConfiguration config)
+        {
+            app.Use<PanelApiKeyAuthenticationMiddleware>();
+
+            if (ModApi.AppSettings.EnableSwagger)
+            {
+                ConfigureSwagger(app, includeOAuthSchema: false, securitySchemeName: "Panel API Key");
+            }
+        }
+
+        private static void ConfigureLegacyPanelMode(IAppBuilder app, HttpConfiguration config)
+        {
+            app.Use<SteamReturnMiddleware>();
+
+            string webRootPath = Path.Combine(ModApi.ModInstance.Path, "wwwroot");
+            if (Directory.Exists(webRootPath))
+            {
+                var fileSystem = new PhysicalFileSystem(webRootPath);
+                // Serve the default file, if present.
+                app.UseDefaultFiles(new DefaultFilesOptions()
+                {
+                    DefaultFileNames = new string[] { "index.html" },
+                    FileSystem = fileSystem,
+                    RequestPath = PathString.Empty
+                });
+                // Serve static files.
+                app.UseStaticFiles(new StaticFileOptions()
+                {
+                    FileSystem = fileSystem,
+                    RequestPath = PathString.Empty
+                });
+            }
+
+            ConfigureSwagger(app, includeOAuthSchema: true, securitySchemeName: "JWT Token");
+
+            // Token Generation
+            app.UseOAuthAuthorizationServer(new OAuthAuthorizationServerOptions()
+            {
+                AllowInsecureHttp = true,
+                TokenEndpointPath = new PathString(OAuthTokenEndpointPath),
+                AccessTokenExpireTimeSpan = TimeSpan.FromSeconds(ModApi.AppSettings.AccessTokenExpireTime),
+                Provider = new CustomOAuthProvider(),
+                RefreshTokenProvider = new CustomRefreshTokenProvider()
+            });
+
+            app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
+        }
+
+        private static void ConfigureSwagger(IAppBuilder app, bool includeOAuthSchema, string securitySchemeName)
+        {
+            app.UseSwaggerUi(ModApi.LoadedPlugins, settings =>
+            {
+                // configure settings here
+                // settings.GeneratorSettings.*: Generator settings and extension points
+                // settings.*: Routing and UI settings
+
+                // Can be configured to load from XML comment files, But loaded content can be OpenApiTagAttribute 
+                settings.GeneratorSettings.UseControllerSummaryAsTagDescription = true;
+                settings.GeneratorSettings.OperationProcessors.Add(new SdtdMultiServerKit.WebApi.OperationSecurityScopeProcessor(securitySchemeName));
+
+                if (includeOAuthSchema)
+                {
+                    settings.GeneratorSettings.DocumentProcessors.Add(new SecurityDefinitionAppender("JWT Token",
+                        new OpenApiSecurityScheme()
+                        {
+                            Type = OpenApiSecuritySchemeType.ApiKey,
+                            Name = "Authorization",
+                            Description = "Copy 'Bearer ' + valid JWT token into field",
+                            In = OpenApiSecurityApiKeyLocation.Header,
+                        }));
+                }
+                else
+                {
+                    settings.GeneratorSettings.DocumentProcessors.Add(new SecurityDefinitionAppender("Panel API Key",
+                        new OpenApiSecurityScheme()
+                        {
+                            Type = OpenApiSecuritySchemeType.ApiKey,
+                            Name = PanelApiKeyAuthenticationMiddleware.ApiKeyHeaderName,
+                            Description = "Shared API key issued to the central panel",
+                            In = OpenApiSecurityApiKeyLocation.Header,
+                        }));
+                }
+
+                settings.GeneratorSettings.ApplySettings(new NewtonsoftJsonSchemaGeneratorSettings { SerializerSettings = ModApi.JsonSerializerSettings, SchemaType = SchemaType.OpenApi3 }, null);
+                settings.PostProcess = (document) =>
+                {
+                    document.Info.Version = "v1";
+                    document.Info.Title = "7DaysToDie-MultiServerKit RESTful APIs Documentation";
+                    document.Info.Description = ModApi.AppSettings.ApiOnly
+                        ? "Game server API for the central MultiServerKit panel."
+                        : "RESTful APIs Documentation for 7 Days to Die dedicated servers.";
+                    document.Info.TermsOfService = "https://7dtd.top";
+                    document.Info.Contact = new OpenApiContact()
+                    {
+                        Name = "syndaq",
+                        Url = "https://github.com/syndaq"
+                    };
+                    document.Info.License = new OpenApiLicense()
+                    {
+                        Name = "LICENSE",
+                        Url = "https://github.com/syndaq/7DaysToDie-MultiServerKit/blob/main/README.md"
+                    };
+
+                    if (includeOAuthSchema)
+                    {
+                        AddOAuthTokenEndpointApiSchema(document);
+                    }
+                };
+            });
         }
 
         private static void AddOAuthTokenEndpointApiSchema(OpenApiDocument document)
