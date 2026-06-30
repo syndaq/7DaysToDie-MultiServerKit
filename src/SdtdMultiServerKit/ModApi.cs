@@ -424,11 +424,9 @@ namespace SdtdMultiServerKit
 
             SqlMapper.AddTypeHandler(new GuidHandler());
 
-            string databasePath = AppSettings.DatabasePath;
-            if (Path.IsPathRooted(databasePath) == false)
-            {
-                databasePath = Path.Combine(AppContext.BaseDirectory, AppSettings.DatabasePath);
-            }
+            string databasePath = AppSettingsPaths.ResolveDatabasePath(
+                ModInstance.Path,
+                AppSettings.DatabasePath);
 
             string connectionString = $"Data Source={databasePath};Cache=Shared";
             DbConnectionFactory.Default.ConfigureOptions(new DbConnectionOptions()
@@ -499,7 +497,8 @@ namespace SdtdMultiServerKit
             }
             catch (Exception ex)
             {
-                throw new Exception("Initialize database error.", ex);
+                string dbPath = AppSettingsPaths.ResolveDatabasePath(ModInstance.Path, AppSettings.DatabasePath);
+                throw new Exception($"Initialize database error (path: {dbPath}).", ex);
             }
         }
     }

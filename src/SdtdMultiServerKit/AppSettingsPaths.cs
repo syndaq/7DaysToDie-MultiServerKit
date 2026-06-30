@@ -14,6 +14,49 @@ namespace SdtdMultiServerKit
         internal static string ModProductionConfigPath(string modPath) =>
             Path.Combine(modPath, LstyDataFolder, AppSettingsFileName);
 
+        internal static string ModDataDirectory(string modPath) =>
+            Path.Combine(modPath, LstyDataFolder);
+
+        /// <summary>
+        /// Resolve SQLite database path. Relative paths use the mod's LSTY_Data folder (writable on
+        /// hosted servers). Falls back to a legacy AppContext.BaseDirectory path when an existing DB
+        /// is found there.
+        /// </summary>
+        internal static string ResolveDatabasePath(string modPath, string configuredPath)
+        {
+            if (string.IsNullOrWhiteSpace(configuredPath))
+            {
+                configuredPath = "database.db";
+            }
+
+            if (Path.IsPathRooted(configuredPath))
+            {
+                return Path.GetFullPath(configuredPath);
+            }
+
+            string relative = configuredPath.Replace('\\', '/');
+            const string legacyPrefix = LstyDataFolder + "/";
+            if (relative.StartsWith(legacyPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                relative = relative.Substring(legacyPrefix.Length);
+            }
+
+            if (string.IsNullOrWhiteSpace(relative))
+            {
+                relative = "database.db";
+            }
+
+            string modDbPath = Path.GetFullPath(Path.Combine(ModDataDirectory(modPath), relative));
+            string legacyDbPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, configuredPath));
+
+            if (!File.Exists(modDbPath) && File.Exists(legacyDbPath))
+            {
+                return legacyDbPath;
+            }
+
+            return modDbPath;
+        }
+
         /// <summary>
         /// Legacy runtime override path used by older builds (Unity Managed folder).
         /// </summary>
