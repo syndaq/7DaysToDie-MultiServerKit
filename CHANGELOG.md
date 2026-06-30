@@ -4,6 +4,13 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.0.11] - 2026-06-30
+
+### Fixed
+
+- **Config** — Document and prioritize `Mods/SdtdMultiServerKit/LSTY_Data/appsettings.json` for runtime overrides; legacy `Managed/LSTY_Data/appsettings.json` still supported. Startup log now shows which config layers loaded and whether `PanelApiKey` is set.
+- **Config** — Saving appsettings via API syncs to Config, Mod/LSTY_Data, and legacy Managed/LSTY_Data paths.
+
 ## [1.0.10] - 2026-06-30
 
 ### Fixed

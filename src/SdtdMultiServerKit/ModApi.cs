@@ -191,28 +191,16 @@ namespace SdtdMultiServerKit
         {
             try
             {
-                const string LSTY_Data = "LSTY_Data";
-                string baseSettingsPath = Path.Combine(AppContext.BaseDirectory, LSTY_Data);
-                
-                string defaultAppConfigPath = Path.Combine(ModInstance.Path, "Config", "appsettings.json");
-                string productionAppConfigPath = Path.Combine(baseSettingsPath, "appsettings.json");
+                string defaultAppConfigPath = AppSettingsPaths.DefaultConfigPath(ModInstance.Path);
+                string modProductionConfigPath = AppSettingsPaths.ModProductionConfigPath(ModInstance.Path);
+                string legacyProductionConfigPath = AppSettingsPaths.LegacyProductionConfigPath();
 
-                if (File.Exists(productionAppConfigPath) == false)
-                {
-                    try
-                    {
-                        Directory.CreateDirectory(baseSettingsPath);
-                        File.Copy(defaultAppConfigPath, productionAppConfigPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        CustomLogger.Warn(ex, $"Copy appsettings to production path {baseSettingsPath} faild, use the default path {defaultAppConfigPath}");
-                    }
-                }
+                AppSettingsPaths.EnsureModProductionConfig(ModInstance.Path, defaultAppConfigPath);
 
                 var builder = new ConfigurationBuilder()
                     .AddJsonFile(defaultAppConfigPath, optional: false, reloadOnChange: false)
-                    .AddJsonFile(productionAppConfigPath, optional: true, reloadOnChange: false);
+                    .AddJsonFile(legacyProductionConfigPath, optional: true, reloadOnChange: false)
+                    .AddJsonFile(modProductionConfigPath, optional: true, reloadOnChange: false);
 
                 var configuration = builder.Build();
                 var appSettings = configuration.Get<AppSettings>();
@@ -220,11 +208,10 @@ namespace SdtdMultiServerKit
                 {
                     throw new Exception("The app settings can not be null.");
                 }
-                else
-                {
-                    ValidateAppSettings(appSettings);
-                    AppSettings = appSettings;
-                }
+
+                ValidateAppSettings(appSettings);
+                AppSettings = appSettings;
+                AppSettingsPaths.LogLoadedSettings(appSettings, ModInstance.Path);
             }
             catch (Exception ex)
             {

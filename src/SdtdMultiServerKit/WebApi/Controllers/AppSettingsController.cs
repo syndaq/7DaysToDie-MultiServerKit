@@ -38,8 +38,7 @@ namespace SdtdMultiServerKit.WebApi.Controllers
 
             ValidateAppSettings(appSettings);
             string json = JsonConvert.SerializeObject(appSettings, ModApi.JsonSerializerSettings);
-            string path = Path.Combine(ModApi.ModInstance.Path, "Config", "appsettings.json");
-            File.WriteAllText(path, json, Encoding.UTF8);
+            AppSettingsPaths.PersistAppSettings(ModApi.ModInstance.Path, json);
             return Ok(AppSettingsPublic.FromAppSettings(appSettings));
         }
 
