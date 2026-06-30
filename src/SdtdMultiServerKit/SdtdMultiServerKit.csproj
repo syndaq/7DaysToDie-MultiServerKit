@@ -21,7 +21,7 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageProjectUrl>https://github.com/syndaq/7DaysToDie-MultiServerKit</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/syndaq/7DaysToDie-MultiServerKit</RepositoryUrl>
-		<Version>1.0.3</Version>
+		<Version>1.0.4</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -93,13 +93,6 @@
 		<None Update="Assets\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="3rdparty-binaries\linux-mono\System.ComponentModel.DataAnnotations.dll" CopyToOutputDirectory="PreserveNewest" Link="System.ComponentModel.DataAnnotations.dll" />
-		<None Include="3rdparty-binaries\linux-mono\System.Reflection.Emit.dll" CopyToOutputDirectory="PreserveNewest" Link="System.Reflection.Emit.dll" />
-		<None Include="3rdparty-binaries\linux-mono\System.Reflection.Emit.ILGeneration.dll" CopyToOutputDirectory="PreserveNewest" Link="System.Reflection.Emit.ILGeneration.dll" />
-		<None Include="3rdparty-binaries\linux-mono\System.Reflection.Emit.Lightweight.dll" CopyToOutputDirectory="PreserveNewest" Link="System.Reflection.Emit.Lightweight.dll" />
 	</ItemGroup>
 
 	<ItemGroup>

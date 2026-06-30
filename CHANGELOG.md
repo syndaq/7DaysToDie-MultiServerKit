@@ -4,6 +4,13 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-06-30
+
+### Fixed
+
+- **Linux dedicated servers** — Stop shipping Mono framework DLLs in the mod root. 7DTD auto-loads every `*.dll` in that folder; Ubuntu/debian `mono-devel` copies are not valid under Unity MonoBleedingEdge (`Invalid Image` on `System.ComponentModel.DataAnnotations.dll`). The mod now resolves those assemblies from the game's `7DaysToDieServer_Data/MonoBleedingEdge` tree at runtime.
+- **Upgrade note** — After deploying v1.0.4, delete any leftover `System.ComponentModel.DataAnnotations.dll` and `System.Reflection.Emit*.dll` files from `Mods/SdtdMultiServerKit/` (not in a subfolder), then restart the server.
+
 ## [1.0.3] - 2026-06-30
 
 ### Fixed
