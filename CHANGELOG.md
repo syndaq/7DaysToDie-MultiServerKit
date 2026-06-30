@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-06-30
+
+### Fixed
+
+- **Linux dedicated servers** — v1.0.1 shipped .NET *reference* assemblies (invalid at runtime on Mono). Release builds now copy real Mono runtime DLLs from `mono-devel` during packaging.
+
 ## [1.0.1] - 2026-06-30
 
 ### Fixed
@@ -39,6 +45,7 @@ First production-ready MultiServerKit release with central panel integration.
 
 See git history for upstream ServerKit features and earlier fork development.
 
-[Unreleased]: https://github.com/syndaq/7DaysToDie-MultiServerKit/compare/v1.0.1...main
+[Unreleased]: https://github.com/syndaq/7DaysToDie-MultiServerKit/compare/v1.0.2...main
+[1.0.2]: https://github.com/syndaq/7DaysToDie-MultiServerKit/releases/tag/v1.0.2
 [1.0.1]: https://github.com/syndaq/7DaysToDie-MultiServerKit/releases/tag/v1.0.1
 [1.0.0]: https://github.com/syndaq/7DaysToDie-MultiServerKit/releases/tag/v1.0.0

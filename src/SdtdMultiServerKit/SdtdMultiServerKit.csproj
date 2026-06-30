@@ -21,7 +21,7 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageProjectUrl>https://github.com/syndaq/7DaysToDie-MultiServerKit</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/syndaq/7DaysToDie-MultiServerKit</RepositoryUrl>
-		<Version>1.0.1</Version>
+		<Version>1.0.2</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -97,15 +97,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="$(PkgMicrosoft_NETFramework_ReferenceAssemblies_net48)\build\.NETFramework\v4.8\System.ComponentModel.DataAnnotations.dll" Visible="false" CopyToOutputDirectory="PreserveNewest" />
-		<None Include="$(PkgMicrosoft_NETFramework_ReferenceAssemblies_net48)\build\.NETFramework\v4.8\Facades\System.Reflection.Emit.dll" Visible="false" CopyToOutputDirectory="PreserveNewest" />
-		<None Include="$(PkgMicrosoft_NETFramework_ReferenceAssemblies_net48)\build\.NETFramework\v4.8\Facades\System.Reflection.Emit.ILGeneration.dll" Visible="false" CopyToOutputDirectory="PreserveNewest" />
-		<None Include="$(PkgMicrosoft_NETFramework_ReferenceAssemblies_net48)\build\.NETFramework\v4.8\Facades\System.Reflection.Emit.Lightweight.dll" Visible="false" CopyToOutputDirectory="PreserveNewest" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Reference Include="System.ComponentModel.DataAnnotations">
-			<Private>true</Private>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="websocket-sharp">
 			<Private>true</Private>

@@ -26,6 +26,12 @@ if [[ ! -d "$BUILD_DIR" ]]; then
   exit 1
 fi
 
+if [[ "$(uname -s)" == "Linux" ]]; then
+  bash "$ROOT/scripts/copy-mono-runtime-dlls.sh" "$BUILD_DIR"
+else
+  echo "Skipping Mono runtime DLL copy (non-Linux build host)." >&2
+fi
+
 mkdir -p "$OUTPUT_DIR"
 rm -f "$ARCHIVE"
 

@@ -36,6 +36,12 @@ jobs:
           echo "dir=$BUILD_DIR" >> "$GITHUB_OUTPUT"
           echo "Using build output: $BUILD_DIR"
 
+      - name: Install Mono runtime libs for Linux deploy
+        run: sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mono-devel
+
+      - name: Copy Mono framework DLLs into build output
+        run: bash scripts/copy-mono-runtime-dlls.sh "${{ steps.builddir.outputs.dir }}"
+
       - name: Package mod zip
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
