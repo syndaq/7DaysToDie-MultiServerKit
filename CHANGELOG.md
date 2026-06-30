@@ -4,6 +4,17 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.0.6] - 2026-06-30
+
+### Fixed
+
+- **Linux SQLite init** — Bundle `System.Runtime.InteropServices.RuntimeInformation.dll` under `Framework/` (required by `Microsoft.Data.Sqlite` / SQLitePCL on Linux dedicated servers where Managed does not include it).
+- **Release packaging** — Copy all `Framework/*.dll` during `dotnet build` so deploys always include the `Framework/` subfolder, not only when the CI copy script runs.
+
+### Note
+
+- After upgrading, confirm `Mods/SdtdMultiServerKit/Framework/` contains both `System.ComponentModel.DataAnnotations.dll` and `System.Runtime.InteropServices.RuntimeInformation.dll`.
+
 ## [1.0.5] - 2026-06-30
 
 ### Fixed

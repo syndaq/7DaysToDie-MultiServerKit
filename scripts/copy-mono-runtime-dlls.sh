@@ -9,12 +9,15 @@ FRAMEWORK_DIR="$TARGET_DIR/Framework"
 
 mkdir -p "$FRAMEWORK_DIR"
 
-if [[ ! -f "$UNITY_DIR/System.ComponentModel.DataAnnotations.dll" ]]; then
-  echo "Missing Unity-compatible System.ComponentModel.DataAnnotations.dll in $UNITY_DIR" >&2
-  echo "Extract it from a Linux 7DTD dedicated server:" >&2
-  echo "  7DaysToDieServer_Data/Managed/System.ComponentModel.DataAnnotations.dll" >&2
+shopt -s nullglob
+dlls=("$UNITY_DIR"/*.dll)
+if [[ ${#dlls[@]} -eq 0 ]]; then
+  echo "No framework DLLs in $UNITY_DIR" >&2
+  echo "Expected at least System.ComponentModel.DataAnnotations.dll from a Linux 7DTD dedicated server." >&2
   exit 1
 fi
 
-cp "$UNITY_DIR/System.ComponentModel.DataAnnotations.dll" "$FRAMEWORK_DIR/"
-echo "Copied System.ComponentModel.DataAnnotations.dll to Framework/ (7DTD Managed)"
+for dll in "${dlls[@]}"; do
+  cp "$dll" "$FRAMEWORK_DIR/"
+  echo "Copied $(basename "$dll") to Framework/"
+done

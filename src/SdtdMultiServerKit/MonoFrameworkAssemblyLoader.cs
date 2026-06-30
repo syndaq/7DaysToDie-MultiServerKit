@@ -16,9 +16,16 @@ namespace SdtdMultiServerKit
         private static readonly HashSet<string> FrameworkAssemblyNames = new(StringComparer.OrdinalIgnoreCase)
         {
             "System.ComponentModel.DataAnnotations",
+            "System.Runtime.InteropServices.RuntimeInformation",
             "System.Reflection.Emit",
             "System.Reflection.Emit.ILGeneration",
             "System.Reflection.Emit.Lightweight",
+        };
+
+        private static readonly HashSet<string> PreloadLogIfMissing = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "System.ComponentModel.DataAnnotations",
+            "System.Runtime.InteropServices.RuntimeInformation",
         };
 
         [ModuleInitializer]
@@ -143,12 +150,37 @@ namespace SdtdMultiServerKit
         private static Assembly? OnAssemblyResolve(object? sender, ResolveEventArgs args)
         {
             string? name = new AssemblyName(args.Name).Name;
-            if (name == null || !FrameworkAssemblyNames.Contains(name))
+            if (string.IsNullOrEmpty(name))
             {
                 return null;
             }
 
-            return TryLoadAssembly(name);
+            if (FrameworkAssemblyNames.Contains(name) || IsBundledFrameworkAssembly(name))
+            {
+                return TryLoadAssembly(name);
+            }
+
+            return null;
+        }
+
+        private static bool IsBundledFrameworkAssembly(string assemblyName)
+        {
+            string? frameworkDir = GetFrameworkDirectory();
+            return frameworkDir != null
+                && File.Exists(Path.Combine(frameworkDir, assemblyName + ".dll"));
+        }
+
+        private static string? GetFrameworkDirectory()
+        {
+            foreach (string dir in SearchDirectories)
+            {
+                if (string.Equals(Path.GetFileName(dir), "Framework", StringComparison.OrdinalIgnoreCase))
+                {
+                    return dir;
+                }
+            }
+
+            return null;
         }
 
         private static void PreloadFrameworkAssemblies()
@@ -167,7 +199,7 @@ namespace SdtdMultiServerKit
                     {
                         LogBootstrap("Preloaded framework assembly {0} from {1}", name, asm.Location);
                     }
-                    else if (string.Equals(name, "System.ComponentModel.DataAnnotations", StringComparison.OrdinalIgnoreCase))
+                    else if (PreloadLogIfMissing.Contains(name))
                     {
                         LogBootstrap(
                             "Framework assembly not found on disk: {0}. Searched: {1}",
