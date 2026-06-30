@@ -65,7 +65,7 @@ namespace SdtdMultiServerKit.WebApi
             if (apiOnly)
             {
                 config.SuppressDefaultHostAuthentication();
-                config.Filters.Add(new PanelApiKeyPrincipalFilter());
+                config.Filters.Add(new PanelApiKeyAuthorizationFilter());
             }
 
             app.Use(async (context, next) =>

@@ -3,7 +3,9 @@ using Newtonsoft.Json.Linq;
 using SdtdMultiServerKit.Constants;
 using SdtdMultiServerKit.Managers;
 using SdtdMultiServerKit.ServerSettings;
+using SdtdMultiServerKit.WebApi;
 using System.Text;
+using System.Web.Http;
 using System.Xml;
 using System.Xml.Linq;
 using SystemInformation;
@@ -80,6 +82,27 @@ namespace SdtdMultiServerKit.WebApi.Controllers
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Panel auth diagnostics (no secret returned).
+        /// </summary>
+        [HttpGet]
+        [AllowAnonymous]
+        [Route(nameof(AuthProbe))]
+        public object AuthProbe()
+        {
+            string key = ModApi.AppSettings.PanelApiKey ?? string.Empty;
+            return new
+            {
+                apiOnly = ModApi.AppSettings.ApiOnly,
+                authVersion = PanelApiKeyAuthenticator.AuthVersion,
+                serverId = ModApi.AppSettings.ServerId,
+                panelApiKeyLength = key.Length,
+                panelApiKeyPrefix = string.IsNullOrEmpty(key)
+                    ? string.Empty
+                    : PanelApiKeyAuthenticator.FormatKeyPrefix(key),
+            };
         }
 
         /// <summary>

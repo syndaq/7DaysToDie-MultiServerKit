@@ -1,7 +1,7 @@
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
-using Microsoft.Owin.Security.OAuth;
 using System.Security.Claims;
+using SdtdMultiServerKit.WebApi;
 
 namespace SdtdMultiServerKit.WebApi.Middlewares
 {
@@ -19,58 +19,17 @@ namespace SdtdMultiServerKit.WebApi.Middlewares
 
         public override Task Invoke(IOwinContext context)
         {
-            string? apiKey = context.Request.Headers.Get(ApiKeyHeaderName);
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                apiKey = GetBearerToken(context.Request.Headers.Get("Authorization"));
-            }
+            string? apiKey = PanelApiKeyAuthenticator.ReadApiKey(context.Request.Headers);
 
-            if (IsValidApiKey(apiKey))
+            if (PanelApiKeyAuthenticator.IsValidApiKey(apiKey))
             {
-                var identity = new ClaimsIdentity(
-                    new[]
-                    {
-                        new Claim(ClaimTypes.Name, "panel"),
-                        new Claim(ClaimTypes.Role, "panel"),
-                    },
-                    AuthenticationType);
-
-                var principal = new ClaimsPrincipal(identity);
-                context.Authentication.SignIn(new AuthenticationProperties(), identity);
+                var principal = PanelApiKeyAuthenticator.CreatePrincipal();
+                context.Authentication.SignIn(new AuthenticationProperties(), (ClaimsIdentity)principal.Identity!);
                 context.Authentication.User = principal;
                 context.Request.User = principal;
             }
 
             return Next.Invoke(context);
-        }
-
-        private static bool IsValidApiKey(string? apiKey)
-        {
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                return false;
-            }
-
-            string expectedKey = ModApi.AppSettings.PanelApiKey;
-            return !string.IsNullOrEmpty(expectedKey)
-                && string.Equals(apiKey.Trim(), expectedKey, StringComparison.Ordinal);
-        }
-
-        private static string? GetBearerToken(string? authorizationHeader)
-        {
-            if (string.IsNullOrEmpty(authorizationHeader))
-            {
-                return null;
-            }
-
-            const string bearerPrefix = "Bearer ";
-            string header = authorizationHeader!;
-            if (header.StartsWith(bearerPrefix, StringComparison.OrdinalIgnoreCase))
-            {
-                return header.Substring(bearerPrefix.Length).Trim();
-            }
-
-            return null;
         }
     }
 }
