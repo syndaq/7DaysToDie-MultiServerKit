@@ -180,6 +180,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 - Repository: https://github.com/syndaq/7DaysToDie-MultiServerKit
 - Panel: https://github.com/syndaq/7DaysToDie-MultiServerKit-Panel
+- **Wiki:** https://github.com/syndaq/7DaysToDie-MultiServerKit/wiki ([source in `wiki/`](wiki/))
 - Original project: https://github.com/IceCoffee1024/7DaysToDie-ServerKit
 
 ## Disclaimer
