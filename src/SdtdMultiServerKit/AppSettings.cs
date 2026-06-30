@@ -21,6 +21,12 @@
         public string ServerId { get; set; } = string.Empty;
 
         /// <summary>
+        /// Base URL of the central panel API (e.g. http://panel-host:3001).
+        /// When set, player points are stored in the panel database and synced locally as a cache.
+        /// </summary>
+        public string PanelUrl { get; set; } = string.Empty;
+
+        /// <summary>
         /// Whether to expose the Swagger UI endpoint. Recommended false in production.
         /// </summary>
         public bool EnableSwagger { get; set; } = false;

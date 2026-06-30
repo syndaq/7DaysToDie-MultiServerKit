@@ -130,7 +130,7 @@ Migrations are idempotent (`CREATE TABLE IF NOT EXISTS`). The SQLite database li
 
 1. Build Release (`dotnet build -c Release`).
 2. Copy the output folder to `Mods/SdtdMultiServerKit/` on the game server.
-3. Set `ApiOnly`, `PanelApiKey`, and `ServerId` in `Config/appsettings.json`.
+3. Set `ApiOnly`, `PanelApiKey`, `ServerId`, and `PanelUrl` in `Config/appsettings.json`.
 4. Bind `WebUrl` to `127.0.0.1` or a private interface; allow only the panel host through the firewall.
 5. Start the server and confirm the log shows SQL migrations and `Loaded N functions`.
 6. Register the server in the [panel](https://github.com/syndaq/7DaysToDie-MultiServerKit-Panel) and confirm health checks pass.
@@ -164,8 +164,8 @@ curl -H "X-Api-Key: your-long-random-secret" http://127.0.0.1:8888/api/Server/St
 - [x] Panel server registry and health monitoring
 - [x] Cluster-wide shop, VIP, CD keys, level gifts, lottery, point log
 - [x] Per-server admin UI coverage (console, permissions, map, teleport, etc.)
-- [ ] Shared player points fully cluster-native (panel is source of truth)
-- [ ] WebSocket aggregation from game servers in the panel
+- [x] Shared player points fully cluster-native (panel is source of truth)
+- [x] WebSocket aggregation from game servers in the panel
 - [ ] Production hardening (CI, automated tests, soak validation)
 
 ## Contributing

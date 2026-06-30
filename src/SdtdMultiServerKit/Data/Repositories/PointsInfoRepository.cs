@@ -1,6 +1,7 @@
 ﻿using IceCoffee.SimpleCRUD.Dtos;
 using SdtdMultiServerKit.Data.Entities;
 using SdtdMultiServerKit.Data.IRepositories;
+using SdtdMultiServerKit.Panel;
 using System.Text;
 using Webserver.WebAPI.APIs.WorldState;
 
@@ -28,18 +29,71 @@ namespace SdtdMultiServerKit.Data.Repositories
         /// <param name="playerId">The player ID.</param>
         /// <param name="points">The points to be changed.</param>
         /// <returns>The task representing the asynchronous operation.</returns>
-        public Task<int> ChangePointsAsync(string playerId, int points)
+        public async Task<int> ChangePointsAsync(
+            string playerId,
+            int points,
+            string? playerName = null,
+            string? category = null,
+            DateTime? lastSignInAt = null)
         {
+            var panel = ModApi.ServiceContainer.Resolve<PanelPointsClient>();
+            if (!PanelPointsSyncContext.SuppressClusterPush && panel.IsEnabled && points != 0)
+            {
+                string resolvedName = playerName ?? ResolvePlayerName(playerId);
+                string resolvedCategory = category ?? "Other";
+                string type = points >= 0 ? "Income" : "Expense";
+                var record = await panel.AdjustPointsAsync(
+                    playerId,
+                    resolvedName,
+                    points,
+                    resolvedCategory,
+                    type,
+                    null,
+                    lastSignInAt).ConfigureAwait(false);
+
+                if (record != null)
+                {
+                    using (PanelPointsSyncContext.EnterSuppressScope())
+                    {
+                        return await SetLocalPointsAsync(playerId, record).ConfigureAwait(false);
+                    }
+                }
+            }
+
             string sql = $"{SqlGenerator.GetInsertStatement()} ON CONFLICT({nameof(T_PointsInfo.Id)}) DO UPDATE SET Points=Points+@Points";
             var entity = new T_PointsInfo()
             {
                 CreatedAt = DateTime.Now,
                 Id = playerId,
-                LastSignInAt = null,
-                PlayerName = string.Empty,
+                LastSignInAt = lastSignInAt,
+                PlayerName = playerName ?? ResolvePlayerName(playerId),
                 Points = points
             };
-            return base.ExecuteAsync(sql, entity);
+            return await base.ExecuteAsync(sql, entity).ConfigureAwait(false);
+        }
+
+        public async Task<int> SetLocalPointsAsync(string playerId, PanelPointsRecord record)
+        {
+            string sql = $"{SqlGenerator.GetInsertStatement()} ON CONFLICT({nameof(T_PointsInfo.Id)}) DO UPDATE SET Points=@Points, PlayerName=@PlayerName, LastSignInAt=@LastSignInAt";
+            var entity = new T_PointsInfo()
+            {
+                CreatedAt = DateTime.Now,
+                Id = playerId,
+                LastSignInAt = record.LastSignInAt,
+                PlayerName = record.DisplayName,
+                Points = record.Points,
+            };
+            return await base.ExecuteAsync(sql, entity).ConfigureAwait(false);
+        }
+
+        private static string ResolvePlayerName(string playerId)
+        {
+            if (Managers.LivePlayerManager.TryGetByPlayerId(playerId, out var player) && player != null)
+            {
+                return player.PlayerName;
+            }
+
+            return string.Empty;
         }
 
         /// <summary>

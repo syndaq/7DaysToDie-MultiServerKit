@@ -28,38 +28,24 @@ namespace SdtdMultiServerKit.Functions
                 DateTime now = DateTime.Now;
                 var pointsInfo = await _pointsInfoRepository.GetByIdAsync(playerId);
 
-                // Nosign-inrecord
-                if (pointsInfo == null)
+                if (pointsInfo != null
+                    && pointsInfo.LastSignInAt.HasValue
+                    && (now - pointsInfo.LastSignInAt.Value).TotalSeconds <= Settings.SignInInterval)
                 {
-                    pointsInfo = new T_PointsInfo()
-                    {
-                        Id = playerId,
-                        CreatedAt = now,
-                        PlayerName = player.PlayerName,
-                        Points = Settings.SignInRewardPoints,
-                        LastSignInAt = now,
-                    };
-
-                    await _pointsInfoRepository.InsertAsync(pointsInfo);
-                }
-                else
-                {
-                    if(pointsInfo.LastSignInAt.HasValue == false || (now - pointsInfo.LastSignInAt.Value).TotalSeconds > Settings.SignInInterval)
-                    {
-                        pointsInfo.LastSignInAt = now;
-                        pointsInfo.Points += Settings.SignInRewardPoints;
-                        pointsInfo.PlayerName = player.PlayerName;
-                        await _pointsInfoRepository.UpdateAsync(pointsInfo);
-                    }
-                    else
-                    {
-                        // Sign-in
-                        SendMessageToPlayer(playerId, this.FormatCmd(Settings.SignInFailureTip, player, pointsInfo.Points));
-                        return true;
-                    }
+                    SendMessageToPlayer(playerId, this.FormatCmd(Settings.SignInFailureTip, player, pointsInfo.Points));
+                    return true;
                 }
 
-                SendMessageToPlayer(playerId, this.FormatCmd(Settings.SignInSuccessTip, player, pointsInfo.Points));
+                await _pointsInfoRepository.ChangePointsAsync(
+                    playerId,
+                    Settings.SignInRewardPoints,
+                    player.PlayerName,
+                    "Sign-in",
+                    now);
+
+                pointsInfo = await _pointsInfoRepository.GetByIdAsync(playerId);
+                int totalPoints = pointsInfo?.Points ?? Settings.SignInRewardPoints;
+                SendMessageToPlayer(playerId, this.FormatCmd(Settings.SignInSuccessTip, player, totalPoints));
 
                 CustomLogger.Info("Player sign in, playerId: {0}, playerName: {1}", playerId, player.PlayerName);
                 return true;

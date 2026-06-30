@@ -28,8 +28,16 @@ namespace SdtdMultiServerKit.Data.IRepositories
         /// </summary>
         /// <param name="playerId">PlayerID</param>
         /// <param name="points">Points</param>
+        /// <param name="playerName">Optional player display name for cluster sync</param>
+        /// <param name="category">Point log category when using cluster points</param>
+        /// <param name="lastSignInAt">Optional sign-in timestamp update</param>
         /// <returns>Updateafter points</returns>
-        Task<int> ChangePointsAsync(string playerId, int points);
+        Task<int> ChangePointsAsync(
+            string playerId,
+            int points,
+            string? playerName = null,
+            string? category = null,
+            DateTime? lastSignInAt = null);
 
         /// <summary>
         /// Asynchronously get paginated points info

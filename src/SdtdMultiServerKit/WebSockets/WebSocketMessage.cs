@@ -2,6 +2,7 @@
 {
     internal class WebSocketMessage
     {
+        [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("modEventType")]
         public ModEventType ModEventType { get; set; }
 

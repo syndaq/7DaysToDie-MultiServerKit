@@ -30,6 +30,23 @@ namespace SdtdMultiServerKit.WebSockets
 
         protected override void OnOpen()
         {
+            if (ModApi.AppSettings.ApiOnly)
+            {
+                string? apiKey = base.QueryString["apiKey"]
+                    ?? base.Headers["X-Api-Key"]
+                    ?? base.Headers["x-api-key"];
+
+                if (IsValidPanelApiKey(apiKey))
+                {
+                    Welcome();
+                    CustomLogger.Info("WebSocket connection established (panel API key). Remote endpoint " + base.UserEndPoint.ToString());
+                    return;
+                }
+
+                Close(CloseStatusCode.InvalidData, "Invalid panel API key.");
+                return;
+            }
+
             string token = base.QueryString["token"] ?? base.Headers["token"];
             var ticket = new TicketDataFormat(CustomDataProtectionProvider.DataProtector).Unprotect(token);
 
@@ -71,6 +88,18 @@ namespace SdtdMultiServerKit.WebSockets
 
             string json = JsonConvert.SerializeObject(new WebSocketMessage<string>(ModEventType.Welcome, stringBuilder.ToString()), ModApi.JsonSerializerSettings);
             Send(json);
+        }
+
+        private static bool IsValidPanelApiKey(string? apiKey)
+        {
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return false;
+            }
+
+            string expectedKey = ModApi.AppSettings.PanelApiKey;
+            return !string.IsNullOrEmpty(expectedKey)
+                && string.Equals(apiKey, expectedKey, StringComparison.Ordinal);
         }
     }
 }

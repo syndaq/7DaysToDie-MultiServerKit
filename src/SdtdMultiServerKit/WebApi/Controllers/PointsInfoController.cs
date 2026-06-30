@@ -67,15 +67,18 @@ namespace SdtdMultiServerKit.WebApi.Controllers
         [Route("")]
         public async Task<IHttpActionResult> Post([FromBody] PointsInfo model)
         {
-            var entity = new T_PointsInfo()
+            using (Panel.PanelPointsSyncContext.EnterSuppressScope())
             {
-                Id = model.Id,
-                CreatedAt = DateTime.Now,
-                LastSignInAt = model.LastSignInAt,
-                PlayerName = model.PlayerName,
-                Points = model.Points,
-            };
-            await _repository.InsertAsync(entity);
+                var entity = new T_PointsInfo()
+                {
+                    Id = model.Id,
+                    CreatedAt = DateTime.Now,
+                    LastSignInAt = model.LastSignInAt,
+                    PlayerName = model.PlayerName,
+                    Points = model.Points,
+                };
+                await _repository.InsertAsync(entity);
+            }
             return Ok();
         }
 
@@ -88,16 +91,19 @@ namespace SdtdMultiServerKit.WebApi.Controllers
         [Route("{id}")]
         public async Task<IHttpActionResult> Put(string id, [FromBody] PointsInfo model)
         {
-            var entity = await _repository.GetByIdAsync(id);
-            if (entity == null)
+            using (Panel.PanelPointsSyncContext.EnterSuppressScope())
             {
-                return NotFound();
-            }
+                var entity = await _repository.GetByIdAsync(id);
+                if (entity == null)
+                {
+                    return NotFound();
+                }
 
-            entity.LastSignInAt = model.LastSignInAt;
-            entity.PlayerName = model.PlayerName;
-            entity.Points = model.Points;
-            await _repository.UpdateAsync(entity);
+                entity.LastSignInAt = model.LastSignInAt;
+                entity.PlayerName = model.PlayerName;
+                entity.Points = model.Points;
+                await _repository.UpdateAsync(entity);
+            }
             return Ok();
         }
 

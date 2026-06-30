@@ -325,6 +325,8 @@ namespace SdtdMultiServerKit
 
                 ModEventHub.GameStartDone += OnGameStartDone;
 
+                Managers.ClusterPointsLoginSync.Register();
+
                 CustomLogger.Info("Registered mod event handlers success.");
             }
             catch (Exception ex)
@@ -412,6 +414,8 @@ namespace SdtdMultiServerKit
 
             // Register your Web API controllers.
             builder.RegisterApiControllers(_loadedPlugins.ToArray());
+
+            builder.RegisterType<Panel.PanelPointsClient>().SingleInstance();
 
             // Run other optional steps, like registering filters,
             // per-controller-type services, etc., then set the dependency resolver
