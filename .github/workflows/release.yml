@@ -39,6 +39,9 @@ jobs:
       - name: Copy Unity framework DLLs into Framework/
         run: bash scripts/copy-mono-runtime-dlls.sh "${{ steps.builddir.outputs.dir }}"
 
+      - name: Move dependency DLLs into Lib/
+        run: bash scripts/layout-mod-folder.sh "${{ steps.builddir.outputs.dir }}"
+
       - name: Package mod zip
         run: |
           VERSION="${GITHUB_REF_NAME#v}"

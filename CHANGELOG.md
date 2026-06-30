@@ -4,7 +4,13 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
-## [1.0.19] - 2026-06-30
+## [1.0.20] - 2026-06-30
+
+### Fixed
+
+- **7DTD v3.0 mod init** — NuGet dependencies (Autofac, etc.) are packaged under `Lib/` instead of the mod root. The game auto-loads every `*.dll` in the mod folder; on v3.0 that caused `Autofac.dll` to be scanned as a mod assembly and fail with `VTable setup of type Autofac.Util.Disposable failed`, preventing `ModApi` from starting.
+- **`MonoFrameworkAssemblyLoader`** — resolves assemblies from `Lib/` at runtime via `AssemblyResolve`.
+
 
 ### Fixed
 

@@ -32,6 +32,8 @@ else
   echo "Skipping Mono runtime DLL copy (non-Linux build host)." >&2
 fi
 
+bash "$ROOT/scripts/layout-mod-folder.sh" "$BUILD_DIR"
+
 mkdir -p "$OUTPUT_DIR"
 rm -f "$ARCHIVE"
 

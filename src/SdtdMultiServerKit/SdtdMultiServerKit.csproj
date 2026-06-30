@@ -21,7 +21,7 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageProjectUrl>https://github.com/syndaq/7DaysToDie-MultiServerKit</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/syndaq/7DaysToDie-MultiServerKit</RepositoryUrl>
-		<Version>1.0.19</Version>
+		<Version>1.0.20</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

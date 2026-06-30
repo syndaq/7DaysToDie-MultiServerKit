@@ -5,13 +5,15 @@ namespace SdtdMultiServerKit
 {
     /// <summary>
     /// Resolves Mono framework assemblies from the game's Managed folder and mod Framework/.
-    /// Do not place these DLLs in the mod root — 7DTD auto-loads every *.dll there.
+    /// Do not place dependency DLLs in the mod root — 7DTD auto-loads every *.dll there.
+    /// Release packages put NuGet dependencies under Lib/ and resolve them at runtime.
     /// Ubuntu/debian mono-devel copies are not the same as the game's Managed assemblies.
     /// </summary>
     internal static class MonoFrameworkAssemblyLoader
     {
         private static readonly object Sync = new();
         private static bool _registered;
+        private static string? _modRootPath;
         private static readonly List<string> SearchDirectories = new();
         private static readonly HashSet<string> FrameworkAssemblyNames = new(StringComparer.OrdinalIgnoreCase)
         {
@@ -49,6 +51,7 @@ namespace SdtdMultiServerKit
         {
             lock (Sync)
             {
+                _modRootPath = modPath;
                 RefreshSearchDirectories(modPath);
 
                 if (_registered)
@@ -65,6 +68,12 @@ namespace SdtdMultiServerKit
         private static void RefreshSearchDirectories(string modPath)
         {
             SearchDirectories.Clear();
+
+            string libDir = Path.Combine(modPath, "Lib");
+            if (Directory.Exists(libDir))
+            {
+                SearchDirectories.Add(libDir);
+            }
 
             foreach (string dir in GetMonoSearchDirectories(modPath))
             {
@@ -154,12 +163,23 @@ namespace SdtdMultiServerKit
                 return null;
             }
 
-            if (FrameworkAssemblyNames.Contains(name) || IsBundledFrameworkAssembly(name))
+            if (FrameworkAssemblyNames.Contains(name) || IsBundledFrameworkAssembly(name) || HasLibAssembly(name))
             {
                 return TryLoadAssembly(name);
             }
 
             return null;
+        }
+
+        private static bool HasLibAssembly(string assemblyName)
+        {
+            if (string.IsNullOrEmpty(_modRootPath))
+            {
+                return false;
+            }
+
+            string libPath = Path.Combine(_modRootPath, "Lib", assemblyName + ".dll");
+            return File.Exists(libPath);
         }
 
         private static bool IsBundledFrameworkAssembly(string assemblyName)
