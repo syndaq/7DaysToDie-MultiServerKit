@@ -21,7 +21,7 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageProjectUrl>https://github.com/syndaq/7DaysToDie-MultiServerKit</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/syndaq/7DaysToDie-MultiServerKit</RepositoryUrl>
-		<Version>1.0.6</Version>
+		<Version>1.0.7</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -54,6 +54,7 @@
 		<PackageReference Include="SkiaSharp" Version="3.116.1" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.116.1" />
 		<PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.11" GeneratePathProperty="true" />
+		<PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" Version="2.1.11" />
 		<PackageReference Include="System.Collections.Immutable" Version="9.0.3" />
 		<!--<PackageReference Include="System.Runtime.Caching" Version="9.0.8" />-->
 		<PackageReference Include="System.Text.Encodings.Web" Version="9.0.3" />
@@ -72,6 +73,7 @@
 	
 	<ItemGroup>
 		<None Include="$(PkgSQLitePCLRaw_lib_e_sqlite3)\runtimes\linux-x64\native\libe_sqlite3.so" Visible="false" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="$(PkgSQLitePCLRaw_lib_e_sqlite3)\runtimes\win-x64\native\e_sqlite3.dll" Visible="false" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<ItemGroup>

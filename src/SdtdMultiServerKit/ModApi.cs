@@ -17,10 +17,8 @@ using Autofac.Integration.WebApi;
 using Microsoft.Data.Sqlite;
 using SdtdMultiServerKit.Managers;
 using SdtdMultiServerKit.WebSockets;
-using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using SdtdMultiServerKit.Constants;
-using System.Runtime.InteropServices.ComTypes;
 using System.Net;
 
 namespace SdtdMultiServerKit
@@ -375,15 +373,7 @@ namespace SdtdMultiServerKit
             var builder = new ContainerBuilder();
 
             #region Register database repository services
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                string destPath = Path.Combine(AppContext.BaseDirectory, "7DaysToDieServer_Data/MonoBleedingEdge/x86_64", "libdl.so");
-                if (File.Exists(destPath) == false)
-                {
-                    string srcPath = Path.Combine(ModInstance.Path, "libe_sqlite3.so");
-                    File.Copy(srcPath, destPath, true);
-                }
-            }
+            SqliteBootstrap.EnsureNativeLibrary(ModInstance.Path);
 
             SqlMapper.AddTypeHandler(new GuidHandler());
 

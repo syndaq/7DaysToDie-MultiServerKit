@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace SdtdMultiServerKit.Commands
 {
@@ -96,14 +95,14 @@ namespace SdtdMultiServerKit.Commands
             string? scriptName = null;
             string? serverPath = null;
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (PlatformHelper.IsWindows)
             {
                 scriptName = "restart-windows.bat";
                 serverPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "startdedicated.bat");
                 string path = Path.Combine(ModApi.ModInstance.Path, scriptName);
                 Process.Start(path, string.Format("{0} \"{1}\"", Process.GetCurrentProcess().Id, serverPath));
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            else if (PlatformHelper.IsLinux)
             {
                 scriptName = "restart-linux.sh";
                 serverPath = AppDomain.CurrentDomain.BaseDirectory;

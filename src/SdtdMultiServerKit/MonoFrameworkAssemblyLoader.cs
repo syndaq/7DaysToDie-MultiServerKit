@@ -16,7 +16,6 @@ namespace SdtdMultiServerKit
         private static readonly HashSet<string> FrameworkAssemblyNames = new(StringComparer.OrdinalIgnoreCase)
         {
             "System.ComponentModel.DataAnnotations",
-            "System.Runtime.InteropServices.RuntimeInformation",
             "System.Reflection.Emit",
             "System.Reflection.Emit.ILGeneration",
             "System.Reflection.Emit.Lightweight",
@@ -25,7 +24,6 @@ namespace SdtdMultiServerKit
         private static readonly HashSet<string> PreloadLogIfMissing = new(StringComparer.OrdinalIgnoreCase)
         {
             "System.ComponentModel.DataAnnotations",
-            "System.Runtime.InteropServices.RuntimeInformation",
         };
 
         [ModuleInitializer]
@@ -44,6 +42,7 @@ namespace SdtdMultiServerKit
             }
 
             Register(modPath);
+            SqliteBootstrap.Initialize(modPath);
         }
 
         internal static void Register(string modPath)

@@ -4,6 +4,17 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.0.7] - 2026-06-30
+
+### Fixed
+
+- **Linux SQLite init** — Stop bundling NuGet `System.Runtime.InteropServices.RuntimeInformation` (it pulls `System.Resources.ResourceManager`, which 7DTD Linux Managed does not ship). Patch `SQLitePCL.Batteries_V2.Init` to use the static `e_sqlite3` provider instead of the .NET Framework dynamic loader, and install `libe_sqlite3.so` under `MonoBleedingEdge/x86_64/`.
+- **OS detection** — Use `Environment.OSVersion.Platform` instead of `RuntimeInformation.IsOSPlatform` for Linux/Windows checks.
+
+### Note
+
+- `Framework/` now only needs `System.ComponentModel.DataAnnotations.dll`. Remove `System.Runtime.InteropServices.RuntimeInformation.dll` if present from a v1.0.6 deploy.
+
 ## [1.0.6] - 2026-06-30
 
 ### Fixed
