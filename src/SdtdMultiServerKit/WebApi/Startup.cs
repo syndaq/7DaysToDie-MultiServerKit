@@ -92,6 +92,8 @@ namespace SdtdMultiServerKit.WebApi
 
             app.Use(async (context, next) =>
             {
+                ModApi.TryMarkGameStartDoneIfRunning();
+
                 if (ModApi.IsGameStartDone == false)
                 {
                     var error = new InternalServerError() { Message = "The game is still initializing." };

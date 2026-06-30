@@ -88,11 +88,13 @@ namespace SdtdMultiServerKit
 
                 InitDependencyResolver();
 
+                RegisterModEventHandlers();
+
+                TryMarkGameStartDoneIfRunning();
+
                 StartupOwinHost();
 
                 StartupWebSocket();
-
-                RegisterModEventHandlers();
 
             }
             catch (Exception ex)
@@ -336,28 +338,76 @@ namespace SdtdMultiServerKit
 
         private static void OnGameStartDone()
         {
-            WorldStaticDataHook.ReplaceXmls();
-            GlobalTimer.RegisterSubTimer(new SubTimer(SkyChangeTrigger.Callback, 1) { IsEnabled = true });
-            
-            FunctionManager.Init();
+            if (IsGameStartDone)
+            {
+                return;
+            }
 
             try
             {
-                string[] files = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Mods"), "MapRendering.dll", SearchOption.AllDirectories);
-                if (files.Length == 0)
+                try
                 {
-                    CustomLogger.Warn("It is detected that TFP Mod is not installed, some functions may not be available.");
+                    WorldStaticDataHook.ReplaceXmls();
+                }
+                catch (Exception ex)
+                {
+                    CustomLogger.Error(ex, "WorldStaticDataHook.ReplaceXmls failed.");
                 }
 
-                MapTileCache = (MapTileCache)MapRenderer.GetTileCache();
+                try
+                {
+                    GlobalTimer.RegisterSubTimer(new SubTimer(SkyChangeTrigger.Callback, 1) { IsEnabled = true });
+                }
+                catch (Exception ex)
+                {
+                    CustomLogger.Error(ex, "Register sky-change timer failed.");
+                }
+
+                FunctionManager.Init();
+
+                try
+                {
+                    string[] files = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Mods"), "MapRendering.dll", SearchOption.AllDirectories);
+                    if (files.Length == 0)
+                    {
+                        CustomLogger.Warn("It is detected that TFP Mod is not installed, some functions may not be available.");
+                    }
+
+                    MapTileCache = (MapTileCache)MapRenderer.GetTileCache();
+                }
+                catch (Exception ex)
+                {
+                    CustomLogger.Error(ex, "Load map tile cache failed, Please do not delete the default mod, You can verify the integrity of the game to solve this problem.");
+                }
             }
-            catch (Exception ex)
+            finally
             {
-                CustomLogger.Error(ex, "Load map tile cache failed, Please do not delete the default mod, You can verify the integrity of the game to solve this problem.");
+                IsGameStartDone = true;
+                CustomLogger.Info("Game start done; API ready.");
+            }
+        }
+
+        internal static bool IsGameWorldReady()
+        {
+            try
+            {
+                return GameManager.Instance?.World != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        internal static void TryMarkGameStartDoneIfRunning()
+        {
+            if (IsGameStartDone || !IsGameWorldReady())
+            {
+                return;
             }
 
-
-            IsGameStartDone = true;
+            CustomLogger.Info("Game world already running; completing game-start hook.");
+            OnGameStartDone();
         }
 
         /// <summary>

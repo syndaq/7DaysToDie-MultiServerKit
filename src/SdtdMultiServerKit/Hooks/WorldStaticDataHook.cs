@@ -22,7 +22,13 @@ namespace SdtdMultiServerKit.Hooks
             var addedTags = new HashSet<string>();
 
             Type type = typeof(XmlLoadInfo);
-            FieldInfo dataField = type.GetField("CompressedXmlData", BindingFlags.Instance | BindingFlags.Public);
+            FieldInfo? dataField = type.GetField("CompressedXmlData", BindingFlags.Instance | BindingFlags.Public);
+            if (dataField == null)
+            {
+                CustomLogger.Warn("WorldStaticDataHook skipped: CompressedXmlData field not found on XmlLoadInfo.");
+                return;
+            }
+
             foreach (var item in xmlsToLoad)
             {
                 string xmlName = item.XmlName;

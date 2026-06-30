@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.0.9] - 2026-06-30
+
+### Fixed
+
+- **API stuck on "The game is still initializing."** — Register mod event handlers before starting OWIN, always set `IsGameStartDone` in a `finally` block even when optional game-start hooks fail, and detect an already-running world on each API request so the REST API unlocks once the server is joinable.
+
 ## [1.0.8] - 2026-06-30
 
 ### Fixed
