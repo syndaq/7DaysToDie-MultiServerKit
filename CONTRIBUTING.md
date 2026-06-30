@@ -54,7 +54,7 @@ Please refer to [Conventional Commits](https://www.conventionalcommits.org)&emsp
 
 ## How can I help contribute translated content?
 1. Create an account on [Crowdin](https://crowdin.com), it is recommended that you use your GitHub account to authorize Crowdin.
-2. Go to [7DaysToDie-ServerKit](https://crowdin.com/project/7daystodie-serverkit) project.
+2. Go to [7DaysToDie-MultiServerKit](https://crowdin.com/project/7daystodie-multiserverkit) project.
 3. Choose the language you want to contribute to.
 4. Find the file you want to translate.
 5. Do the translation.
@@ -62,6 +62,6 @@ Please refer to [Conventional Commits](https://www.conventionalcommits.org)&emsp
 That simple, and the UI is very intuitive to use, you should have no trouble using it. After you submit your work, it would be online once the translation is approved by proofreader.
 
 ## How can I become a proofreader?
-You can [raise an issue](https://crowdin.com/project/7daystodie-serverkit/discussions) on Crowdin to us for becoming a proofreader of the language you wish to be.
+You can [raise an issue](https://crowdin.com/project/7daystodie-multiserverkit/discussions) on Crowdin to us for becoming a proofreader of the language you wish to be.
 
 That's all, thanks for your contribution! 🤩

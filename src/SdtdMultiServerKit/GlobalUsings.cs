@@ -1,0 +1,14 @@
+﻿global using System.ComponentModel.DataAnnotations;
+global using SdtdMultiServerKit.Models;
+global using SdtdMultiServerKit.Utilities;
+global using SdtdMultiServerKit.Constants;
+global using SdtdMultiServerKit.Extensions;
+global using IceCoffee.Common.Extensions;
+global using IceCoffee.Common.Timers;
+global using IceCoffee.Common.Templates;
+global using System.Web.Http;
+global using System.Web.Http.Description;
+global using Newtonsoft.Json;
+global using Autofac;
+global using IceCoffee.Common;
+global using Newtonsoft.Json.Converters;
