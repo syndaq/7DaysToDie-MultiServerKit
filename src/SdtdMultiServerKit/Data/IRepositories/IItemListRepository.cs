@@ -30,6 +30,10 @@ namespace SdtdMultiServerKit.Data.IRepositories
         /// <returns>List of items</returns>
         Task<IEnumerable<T_ItemList>> GetListByVipGiftIdAsync(string vipGiftId);
 
+        Task<IEnumerable<T_ItemList>> GetListByLevelGiftIdAsync(string levelGiftId);
+
+        Task<IEnumerable<T_ItemList>> GetListByLotteryPoolIdAsync(int lotteryPoolId);
+
         /// <summary>
         /// Get paged item list
         /// </summary>

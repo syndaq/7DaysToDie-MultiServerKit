@@ -23,6 +23,10 @@ namespace SdtdMultiServerKit.Data.IRepositories
         /// <returns>A task that represents the asynchronous operation. The task result contains the command list.</returns>
         Task<IEnumerable<T_CommandList>> GetListByVipGiftIdAsync(string vipGiftId);
 
+        Task<IEnumerable<T_CommandList>> GetListByLevelGiftIdAsync(string levelGiftId);
+
+        Task<IEnumerable<T_CommandList>> GetListByLotteryPoolIdAsync(int lotteryPoolId);
+
         /// <summary>
         /// Get command list by task schedule Id
         /// </summary>

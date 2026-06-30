@@ -32,6 +32,19 @@ namespace SdtdMultiServerKit.Data.Repositories
             return base.GetListAsync(whereClause, param: new { VipGiftId = vipGiftId });
         }
 
+        public Task<IEnumerable<T_ItemList>> GetListByLevelGiftIdAsync(string levelGiftId)
+        {
+            string tableName = GetSqlGenerator<T_LevelGiftItem>().TableName;
+            string whereClause = $"Id IN (SELECT ItemId FROM {tableName} WHERE LevelGiftId=@LevelGiftId)";
+            return base.GetListAsync(whereClause, param: new { LevelGiftId = levelGiftId });
+        }
+
+        public Task<IEnumerable<T_ItemList>> GetListByLotteryPoolIdAsync(int lotteryPoolId)
+        {
+            string whereClause = "Id IN (SELECT ItemId FROM T_LotteryPoolItem WHERE LotteryPoolId=@LotteryPoolId)";
+            return base.GetListAsync(whereClause, param: new { LotteryPoolId = lotteryPoolId });
+        }
+
         /// <inheritdoc/>
         public Task<PagedDto<T_ItemList>> GetPagedListAsync(PaginationQueryDto dto)
         {

@@ -129,6 +129,22 @@
     "NonVipTip": "[00FF00]You are not a VIP yet~",
     "ClaimSuccessTip": "[00FF00]Congratulations on successfully receiving the gift package: {GiftName}"
   },
+  "LevelGiftSettings": {
+    "IsEnabled": false,
+    "ClaimCmd": "lq",
+    "HasClaimedTip": "[00FF00]You have already claimed this level gift!",
+    "LevelNotEnoughTip": "[00FF00]Your level is not enough, you need to reach level {RequiredLevel} to claim!",
+    "NoGiftTip": "[00FF00]You have no level gifts available to claim!",
+    "ClaimSuccessTip": "[00FF00]Congratulations! You have successfully claimed the {GiftName} gift!"
+  },
+  "PvpAreaSettings": {
+    "IsEnabled": false,
+    "KillMode": "strangers",
+    "DropOnDeath": "none",
+    "OnlineLandClaimBonus": 4,
+    "OfflineLandClaimBonus": 8,
+    "DefaultNoticeBuff": "buffPvpVeNoticePve"
+  },
   "CdKeyRedeemSettings": {
     "IsEnabled": false,
     "HasAlreadyRedeemedTip": "[00FF00] You have already redeemed the CD key.",
@@ -148,6 +164,23 @@
     "KillTip": "You killed the boss {EntityName}, earned 1 points",
     "EnemyRewardMap": {},
     "FallbackReward": 1
+  },
+  "LotterySettings": {
+    "IsEnabled": false,
+    "QueryListCmd": "lottery",
+    "DrawCmdPrefix": "draw",
+    "DrawCost": 10,
+    "DrawInterval": 60,
+    "PoolItemTip": "[00FF00]{PoolId}. {PoolName} - Cost: {DrawCost} - Weight: {Weight}",
+    "DrawSuccessTip": "[00FF00]Congratulations! You won from pool: {PoolName}",
+    "PointsNotEnoughTip": "[FF0000]Not enough points. This draw costs {DrawCost}.",
+    "CoolingTip": "[FF0000]Please wait before drawing again.",
+    "NoPoolTip": "[FF0000]No lottery pools are available right now."
+  },
+  "MuteCommandSettings": {
+    "IsEnabled": false,
+    "MutedCommands": [],
+    "MutedTip": "[FF0000]That command is disabled on this server."
   },
   "TaskScheduleSettings": {
     "IsEnabled": false

@@ -1,0 +1,39 @@
+-- Level gift rewards
+CREATE TABLE IF NOT EXISTS T_LevelGift_v1(
+	Id TEXT NOT NULL PRIMARY KEY,
+	CreatedAt TEXT NOT NULL,
+	GiftType TEXT NOT NULL,
+	DisplayName TEXT,
+	Name TEXT NOT NULL,
+	RequiredLevel INTEGER NOT NULL,
+	ClaimState INTEGER NOT NULL,
+	TotalClaimCount INTEGER NOT NULL,
+	LastClaimAt TEXT,
+	Description TEXT
+);
+
+PRAGMA FOREIGN_KEYS = ON;
+
+CREATE TABLE IF NOT EXISTS T_LevelGiftItem_v1(
+	LevelGiftId TEXT NOT NULL,
+	ItemId INTEGER NOT NULL,
+	PRIMARY KEY (LevelGiftId, ItemId),
+	FOREIGN KEY (LevelGiftId) REFERENCES T_LevelGift_v1(Id) ON DELETE CASCADE,
+	FOREIGN KEY (ItemId) REFERENCES T_ItemList(Id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS T_LevelGiftCommand_v1(
+	LevelGiftId TEXT NOT NULL,
+	CommandId INTEGER NOT NULL,
+	PRIMARY KEY (LevelGiftId, CommandId),
+	FOREIGN KEY (LevelGiftId) REFERENCES T_LevelGift_v1(Id) ON DELETE CASCADE,
+	FOREIGN KEY (CommandId) REFERENCES T_CommandList(Id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS T_LevelGiftClaim_v1(
+	PlayerId TEXT NOT NULL,
+	LevelGiftId TEXT NOT NULL,
+	ClaimedAt TEXT NOT NULL,
+	PRIMARY KEY (PlayerId, LevelGiftId),
+	FOREIGN KEY (LevelGiftId) REFERENCES T_LevelGift_v1(Id) ON DELETE CASCADE
+);

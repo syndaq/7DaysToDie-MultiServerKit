@@ -4,19 +4,46 @@ A mod for **7 Days to Die** dedicated servers that exposes a **REST API** for th
 
 ## Vision
 
-MultiServerKit manages multiple dedicated game servers from a central panel. Shared systems — shop, points, VIP, CD keys, and player data — travel with players when they move between servers in the cluster.
+MultiServerKit manages multiple dedicated game servers from a central panel. Shared systems — shop, points, VIP, CD keys, level gifts, lottery, and player data — travel with players when they move between servers in the cluster.
 
 **This repo is the game-server mod only.** It does not serve a web UI. Admins use the separate panel repository.
 
-## Features (current)
+## Features
+
+### API & infrastructure
 
 - RESTful API for server administration (API-only mode by default)
 - Panel API key authentication (`X-Api-Key` header)
-- Points system, game store, VIP gifts, and CD key redemption (moving to panel)
-- Teleport (home, city, friend), colored chat, auto-backup, and task scheduling
+- Optional Swagger UI at `/swagger` when `EnableSwagger` is true
 - WebSocket telnet and live event broadcasting
 - Harmony performance tuning patches
 - Multi-language localization (English-first)
+
+### Game systems (mod-direct or panel-synced)
+
+| Feature | Scope | Notes |
+|---------|--------|--------|
+| Points system | Per-server settings; cluster points via panel | Sign-in, query, currency exchange |
+| Game store | Cluster-wide via panel | Products synced to all servers |
+| VIP gifts | Cluster-wide via panel | |
+| CD key redeem | Cluster-wide via panel | |
+| Level gifts | Cluster-wide via panel | Claim tracking per player |
+| Lottery | Cluster-wide via panel | Weighted pools, draw commands |
+| Teleport (home / city / friend) | Per-server | Settings + location CRUD |
+| PVP/PVE areas | Per-server | Kill mode, drop-on-death, land-claim rules |
+| Boss kill reward | Per-server | Points on boss zombie/animal kills |
+| Chunk reset | Per-server | Reset map regions by coordinates |
+| Mute commands | Per-server | Block chat commands with custom tip |
+| Global settings | Per-server | Protection, triggers, auto-restart |
+| Game notice | Per-server | Welcome + rotating + blood moon messages |
+| Auto backup | Per-server | Scheduled archives + manual trigger |
+| Task schedule | Per-server | Cron jobs bound to command list |
+| Item / command lists | Per-server | Shared catalogs for gifts, shop, schedules |
+| Prefab tools | Per-server | Browse, place, undo |
+| Map | Per-server | Tile API, full/explored render |
+| Permissions | Per-server | Admins, command permissions, ban/whitelist |
+| Chat records | Per-server | Searchable log + global message API |
+| Console | Per-server | Remote command execution |
 
 ## Requirements
 
@@ -25,11 +52,6 @@ MultiServerKit manages multiple dedicated game servers from a central panel. Sha
 - [.NET SDK 8+](https://dotnet.microsoft.com/download) (builds `net48`)
 - Visual Studio 2022 (Windows) or VS Code / Rider (Linux)
 - **7 Days to Die** dedicated server game binaries (see below)
-
-### Frontend
-
-- Node.js 18+
-- Git 2.20+
 
 ## Getting started
 
@@ -83,11 +105,35 @@ Edit `Config/appsettings.json` (copied to `LSTY_Data/appsettings.json` on first 
 
 Set `ApiOnly` to `false` only if you need the legacy embedded web panel.
 
+> **Note:** `dotnet restore` may report `NU1903` for the transitive `SQLitePCLRaw.lib.e_sqlite3` 2.x package pulled in by `Microsoft.Data.Sqlite`. The project suppresses this warning until dependencies move to SQLitePCLRaw 3.x (`SourceGear.sqlite3`). Track upstream updates before overriding the native SQLite package manually.
+
 ### 5. Deploy
 
 Copy the build output to your server's `Mods/SdtdMultiServerKit/` directory alongside `ModInfo.xml` and the `Config/` folder.
 
 **Do not expose port 8888 to the public internet.** Only the central panel should reach this API (firewall / VPN).
+
+### SQL migrations
+
+On first startup (and after mod updates), the mod runs SQL files from `Config/sql/` in filename order. Current migrations:
+
+| File | Purpose |
+|------|---------|
+| `1-` … `8-` | Core tables (items, commands, goods, points, VIP, CD keys, etc.) |
+| `9-LevelGift.sql` | Level gift rewards and claim tracking |
+| `10-PvpArea.sql` | PVP/PVE custom zones |
+| `11-Lottery.sql` | Lottery pools, items, and commands |
+
+Migrations are idempotent (`CREATE TABLE IF NOT EXISTS`). The SQLite database lives under the mod data folder after first run. Back up that database before major upgrades.
+
+### Deployment checklist
+
+1. Build Release (`dotnet build -c Release`).
+2. Copy the output folder to `Mods/SdtdMultiServerKit/` on the game server.
+3. Set `ApiOnly`, `PanelApiKey`, and `ServerId` in `Config/appsettings.json`.
+4. Bind `WebUrl` to `127.0.0.1` or a private interface; allow only the panel host through the firewall.
+5. Start the server and confirm the log shows SQL migrations and `Loaded N functions`.
+6. Register the server in the [panel](https://github.com/syndaq/7DaysToDie-MultiServerKit-Panel) and confirm health checks pass.
 
 ### Panel authentication
 
@@ -105,6 +151,7 @@ curl -H "X-Api-Key: your-long-random-secret" http://127.0.0.1:8888/api/Server/St
 │   ├── WebSockets/               # Telnet + broadcaster
 │   ├── Data/                     # SQLite repositories
 │   ├── Functions/                # Game features (store, points, teleport, etc.)
+│   ├── HarmonyPatchers/          # PVP area enforcement, performance
 │   ├── Config/                   # appsettings, SQL migrations, locales
 │   └── ModInfo.xml
 └── scripts/                      # Dev tooling
@@ -113,10 +160,13 @@ curl -H "X-Api-Key: your-long-random-secret" http://127.0.0.1:8888/api/Server/St
 ## Multi-server roadmap
 
 - [x] API-only mode (no embedded panel on game servers)
-- [ ] Central panel repository ([7DaysToDie-MultiServerKit-Panel](https://github.com/syndaq/7DaysToDie-MultiServerKit-Panel))
-- [ ] Shared database for cross-server player data (points, shop, VIP, CD keys)
-- [ ] Panel server registry and health monitoring
-- [ ] Player data persistence when switching servers
+- [x] Central panel repository ([7DaysToDie-MultiServerKit-Panel](https://github.com/syndaq/7DaysToDie-MultiServerKit-Panel))
+- [x] Panel server registry and health monitoring
+- [x] Cluster-wide shop, VIP, CD keys, level gifts, lottery, point log
+- [x] Per-server admin UI coverage (console, permissions, map, teleport, etc.)
+- [ ] Shared player points fully cluster-native (panel is source of truth)
+- [ ] WebSocket aggregation from game servers in the panel
+- [ ] Production hardening (CI, automated tests, soak validation)
 
 ## Contributing
 
