@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-06-30
+
+### Fixed
+
+- **Linux dedicated servers** — Bundle `System.ComponentModel.DataAnnotations` and `System.Reflection.Emit` (plus ILGeneration/Lightweight facades) in the release zip so the mod loads under Mono without missing-assembly errors.
+
 ## [1.0.0] - 2026-06-30
 
 First production-ready MultiServerKit release with central panel integration.
@@ -33,5 +39,6 @@ First production-ready MultiServerKit release with central panel integration.
 
 See git history for upstream ServerKit features and earlier fork development.
 
-[Unreleased]: https://github.com/syndaq/7DaysToDie-MultiServerKit/compare/v1.0.0...main
+[Unreleased]: https://github.com/syndaq/7DaysToDie-MultiServerKit/compare/v1.0.1...main
+[1.0.1]: https://github.com/syndaq/7DaysToDie-MultiServerKit/releases/tag/v1.0.1
 [1.0.0]: https://github.com/syndaq/7DaysToDie-MultiServerKit/releases/tag/v1.0.0
