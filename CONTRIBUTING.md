@@ -7,7 +7,7 @@
 
 **Insufficient information issue WILL BE CLOSED directly because we cannot reproduce them**
 
-Next section is for those who wants to help develop 7DaysToDie-ServerKit.
+Next section is for those who wants to help develop 7DaysToDie-MultiServerKit.
 
 ## Pre-request
 For back end develop you should be having:
