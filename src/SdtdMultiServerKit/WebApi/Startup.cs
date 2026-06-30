@@ -13,6 +13,7 @@ using Microsoft.Owin.FileSystems;
 using NJsonSchema.NewtonsoftJson.Generation;
 using Autofac.Integration.WebApi;
 using SdtdMultiServerKit.WebApi.DataProtection;
+using SdtdMultiServerKit.WebApi.Filters;
 using SdtdMultiServerKit.WebApi.Middlewares;
 using System.Web.Http.Dispatcher;
 using System.Web.Http.Filters;
@@ -64,7 +65,7 @@ namespace SdtdMultiServerKit.WebApi
             if (apiOnly)
             {
                 config.SuppressDefaultHostAuthentication();
-                config.Filters.Add(new HostAuthenticationFilter(PanelApiKeyAuthenticationMiddleware.AuthenticationType));
+                config.Filters.Add(new PanelApiKeyPrincipalFilter());
             }
 
             app.Use(async (context, next) =>

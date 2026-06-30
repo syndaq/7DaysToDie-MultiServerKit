@@ -1,4 +1,5 @@
 using Microsoft.Owin;
+using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
 using System.Security.Claims;
 
@@ -34,7 +35,10 @@ namespace SdtdMultiServerKit.WebApi.Middlewares
                     },
                     AuthenticationType);
 
-                context.Authentication.User = new ClaimsPrincipal(identity);
+                var principal = new ClaimsPrincipal(identity);
+                context.Authentication.SignIn(new AuthenticationProperties(), identity);
+                context.Authentication.User = principal;
+                context.Request.User = principal;
             }
 
             return Next.Invoke(context);
