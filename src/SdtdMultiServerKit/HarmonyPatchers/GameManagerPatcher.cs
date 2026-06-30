@@ -205,7 +205,7 @@ namespace SdtdMultiServerKit.HarmonyPatchers
                 {
                     Utilities.Utils.SendPrivateMessage(new PrivateMessage()
                     {
-                        Message = message,
+                        Message = message!,
                         TargetPlayerIdOrName = __instance.entityId.ToString(),
                     });
                 }

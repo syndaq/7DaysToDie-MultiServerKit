@@ -104,7 +104,7 @@ namespace SdtdMultiServerKit.Functions
 
         private void ExecuteInternal()
         {
-            string tempDir = null;
+            string? tempDir = null;
             try
             {
                 string backupSrcPath = GameIO.GetSaveGameDir();

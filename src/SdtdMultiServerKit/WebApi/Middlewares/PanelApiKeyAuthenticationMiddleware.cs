@@ -60,9 +60,10 @@ namespace SdtdMultiServerKit.WebApi.Middlewares
             }
 
             const string bearerPrefix = "Bearer ";
-            if (authorizationHeader.StartsWith(bearerPrefix, StringComparison.OrdinalIgnoreCase))
+            string header = authorizationHeader!;
+            if (header.StartsWith(bearerPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                return authorizationHeader.Substring(bearerPrefix.Length).Trim();
+                return header.Substring(bearerPrefix.Length).Trim();
             }
 
             return null;

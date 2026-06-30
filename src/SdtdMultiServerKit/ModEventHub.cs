@@ -32,7 +32,9 @@ namespace SdtdMultiServerKit
         /// <summary>
         /// Event that is triggered on each game update.
         /// </summary>
+#pragma warning disable CS0067 // Broadcaster subscribes; vanilla hook that would invoke this is intentionally disabled.
         public static event Action? GameUpdate;
+#pragma warning restore CS0067
 
         /// <summary>
         /// Event that is triggered when the game is about to shut down.
@@ -148,12 +150,7 @@ namespace SdtdMultiServerKit
         /// <summary>
         /// Handles a chat message.
         /// </summary>
-        /// <param name="clientInfo">The client info.</param>
-        /// <param name="eChatType">The chat type.</param>
-        /// <param name="senderEntityId">The sender entity ID.</param>
-        /// <param name="message">The chat message.</param>
-        /// <param name="mainName">The main name.</param>
-        /// <param name="recipientEntityIds">The recipient entity IDs.</param>
+        /// <param name="sChatMessageData">The chat message event data.</param>
         /// <returns>True to pass the message on to the next mod or output to chat, false to prevent the message from being passed on or output to chat.</returns>
         //public static bool OnChatMessage(ClientInfo? clientInfo, EChatType eChatType, int senderEntityId, string message, string mainName, List<int> recipientEntityIds)
         public static EModEventResult OnChatMessage(ref SChatMessageData sChatMessageData)
@@ -213,8 +210,7 @@ namespace SdtdMultiServerKit
         /// <summary>
         /// Runs when an entity is killed.
         /// </summary>
-        /// <param name="victim">The killed entity.</param>
-        /// <param name="killer">The entity that killed the entity.</param>
+        /// <param name="sEntityKilledData">The entity killed event data.</param>
         //public static void OnEntityKilled(Entity victim, Entity killer)
         public static void OnEntityKilled(ref SEntityKilledData sEntityKilledData)
         {
@@ -272,8 +268,7 @@ namespace SdtdMultiServerKit
         /// <summary>
         /// Runs on each player disconnect.
         /// </summary>
-        /// <param name="clientInfo">The client info.</param>
-        /// <param name="shutdown">Indicates if the server is shutting down.</param>
+        /// <param name="sPlayerDisconnectedData">The player disconnected event data.</param>
         //public static void OnPlayerDisconnected(ClientInfo clientInfo, bool shutdown)
         public static void OnPlayerDisconnected(ref SPlayerDisconnectedData sPlayerDisconnectedData)
         {
@@ -293,9 +288,7 @@ namespace SdtdMultiServerKit
         /// <summary>
         /// Runs on initial connection from a player. The client info is usually null at this point.
         /// </summary>
-        /// <param name="clientInfo">The client info.</param>
-        /// <param name="compatibilityVersion">The compatibility version.</param>
-        /// <param name="stringBuilder">The string builder.</param>
+        /// <param name="sPlayerLoginData">The player login event data.</param>
         /// <returns>True to allow the player to log in, false otherwise.</returns>
         //public static bool OnPlayerLogin(ClientInfo clientInfo, string compatibilityVersion, StringBuilder stringBuilder)
         public static EModEventResult OnPlayerLogin(ref SPlayerLoginData sPlayerLoginData)
@@ -313,9 +306,7 @@ namespace SdtdMultiServerKit
         /// <summary>
         /// Runs each time a player spawns, including on login, respawn from death, and teleport.
         /// </summary>
-        /// <param name="clientInfo">The client info.</param>
-        /// <param name="respawnType">The respawn type.</param>
-        /// <param name="position">The position.</param>
+        /// <param name="sPlayerSpawnedInWorldData">The player spawned in world event data.</param>
         //public static void OnPlayerSpawnedInWorld(ClientInfo clientInfo, RespawnType respawnType, Vector3i position)
         public static void OnPlayerSpawnedInWorld(ref SPlayerSpawnedInWorldData sPlayerSpawnedInWorldData)
         {
@@ -335,9 +326,7 @@ namespace SdtdMultiServerKit
         /// <summary>
         /// Runs just before a player is spawned in the world.
         /// </summary>
-        /// <param name="clientInfo">The client info.</param>
-        /// <param name="chunkViewDim">The chunk view dimension.</param>
-        /// <param name="playerProfile">The player profile.</param>
+        /// <param name="sPlayerSpawningData">The player spawning event data.</param>
         //public static void OnPlayerSpawning(ClientInfo clientInfo, int chunkViewDim, PlayerProfile playerProfile)
         public static void OnPlayerSpawning(ref SPlayerSpawningData sPlayerSpawningData)
         {
@@ -350,8 +339,7 @@ namespace SdtdMultiServerKit
         /// Runs each time a player file is saved from the client to the server.
         /// This will usually run about every 30 seconds per player as well as triggered updates such as dying.
         /// </summary>
-        /// <param name="clientInfo">The client info.</param>
-        /// <param name="pdf">The player data file.</param>
+        /// <param name="sSavePlayerDataData">The save player data event data.</param>
         //public static void OnSavePlayerData(ClientInfo clientInfo, PlayerDataFile pdf)
         public static void OnSavePlayerData(ref SSavePlayerDataData sSavePlayerDataData)
         {

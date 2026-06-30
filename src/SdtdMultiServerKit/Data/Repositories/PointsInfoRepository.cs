@@ -28,7 +28,10 @@ namespace SdtdMultiServerKit.Data.Repositories
         /// </summary>
         /// <param name="playerId">The player ID.</param>
         /// <param name="points">The points to be changed.</param>
-        /// <returns>The task representing the asynchronous operation.</returns>
+        /// <param name="playerName">Optional player display name for cluster sync.</param>
+        /// <param name="category">Point log category when using cluster points.</param>
+        /// <param name="lastSignInAt">Optional sign-in timestamp update.</param>
+        /// <returns>The number of rows affected.</returns>
         public async Task<int> ChangePointsAsync(
             string playerId,
             int points,
