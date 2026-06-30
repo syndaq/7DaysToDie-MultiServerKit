@@ -4,22 +4,34 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-06-30
+
+First production-ready MultiServerKit release with central panel integration.
+
 ### Added
 
-- **PVP/PVE areas** — Custom zones with kill mode, drop-on-death, land-claim bonus, invulnerable claims; Harmony enforcement hooks
-- **Lottery** — Weighted pools with item/command bindings; settings and draw commands
+- **API-only mode** — REST API on port 8888; no embedded web UI on game servers
+- **Panel API key auth** — `X-Api-Key` for all REST requests; WebSocket auth via `?apiKey=` in ApiOnly mode
+- **Cluster-native points** — `PanelUrl` routes balances through panel PostgreSQL with local SQLite cache
+- **Login points sync** — Pull cluster balance on player login
+- **PVP/PVE areas** — Custom zones with kill mode, drop-on-death, land-claim rules
+- **Lottery** — Weighted pools with item/command bindings
 - **Level gifts** — Milestone rewards with claim tracking
-- **Boss kill reward** — Configurable points per entity type with fallback reward and kill tip
-- **Chunk reset** — `POST /api/ChunkReset` to reset map regions by coordinates
-- **Mute commands** — Block specific chat commands with a custom player message
+- **Boss kill reward** — Configurable points per entity type
+- **Chunk reset** — Reset map regions by coordinates
+- **Mute commands** — Block specific chat commands
 - **SQL migrations** — `9-LevelGift.sql`, `10-PvpArea.sql`, `11-Lottery.sql`
-- Settings API controllers for PVP areas, lottery, level gifts, boss kill reward, mute commands
+- Wiki documentation and publish workflow
+- GitHub Release workflow with pre-built mod zip
 
 ### Changed
 
-- README expanded with feature matrix, deployment checklist, and updated roadmap
-- `NU1903` suppressed for SQLitePCLRaw 2.x with documented upgrade path
+- README and wiki expanded for multi-server deployment
+- Build warnings reduced (XML docs, nullable annotations); CS8618 DTO warnings remain harmless
 
-## Prior releases
+## Prior history
 
-See git history for API-only mode, English-first rename, and earlier ServerKit features.
+See git history for upstream ServerKit features and earlier fork development.
+
+[Unreleased]: https://github.com/syndaq/7DaysToDie-MultiServerKit/compare/v1.0.0...main
+[1.0.0]: https://github.com/syndaq/7DaysToDie-MultiServerKit/releases/tag/v1.0.0

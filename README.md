@@ -128,8 +128,10 @@ Migrations are idempotent (`CREATE TABLE IF NOT EXISTS`). The SQLite database li
 
 ### Deployment checklist
 
-1. Build Release (`dotnet build -c Release`).
-2. Copy the output folder to `Mods/SdtdMultiServerKit/` on the game server.
+Prefer a [GitHub Release](https://github.com/syndaq/7DaysToDie-MultiServerKit/releases) zip, or build locally — see [docs/RELEASE.md](docs/RELEASE.md).
+
+1. Download `SdtdMultiServerKit-x.y.z.zip` from Releases **or** build Release (`dotnet build -c Release`).
+2. Copy/extract into `Mods/SdtdMultiServerKit/` on the game server.
 3. Set `ApiOnly`, `PanelApiKey`, `ServerId`, and `PanelUrl` in `Config/appsettings.json`.
 4. Bind `WebUrl` to `127.0.0.1` or a private interface; allow only the panel host through the firewall.
 5. Start the server and confirm the log shows SQL migrations and `Loaded N functions`.
@@ -179,6 +181,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Links
 
 - Repository: https://github.com/syndaq/7DaysToDie-MultiServerKit
+- **Releases:** https://github.com/syndaq/7DaysToDie-MultiServerKit/releases
 - Panel: https://github.com/syndaq/7DaysToDie-MultiServerKit-Panel
 - **Wiki:** https://github.com/syndaq/7DaysToDie-MultiServerKit/wiki ([source in `wiki/`](wiki/))
 - Original project: https://github.com/IceCoffee1024/7DaysToDie-ServerKit
