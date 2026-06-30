@@ -49,7 +49,7 @@ namespace SdtdMultiServerKit.WebApi.Middlewares
 
             string expectedKey = ModApi.AppSettings.PanelApiKey;
             return !string.IsNullOrEmpty(expectedKey)
-                && string.Equals(apiKey, expectedKey, StringComparison.Ordinal);
+                && string.Equals(apiKey.Trim(), expectedKey, StringComparison.Ordinal);
         }
 
         private static string? GetBearerToken(string? authorizationHeader)

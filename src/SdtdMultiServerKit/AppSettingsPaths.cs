@@ -106,6 +106,16 @@ namespace SdtdMultiServerKit
             }
         }
 
+        private static string FormatKeyPrefix(string key)
+        {
+            if (key.Length <= 12)
+            {
+                return key;
+            }
+
+            return key.Substring(0, 12) + "…";
+        }
+
         internal static void LogLoadedSettings(AppSettings settings, string modPath)
         {
             string defaultPath = DefaultConfigPath(modPath);
@@ -123,7 +133,7 @@ namespace SdtdMultiServerKit
 
             string keyStatus = string.IsNullOrWhiteSpace(settings.PanelApiKey)
                 ? "NOT SET"
-                : $"set ({settings.PanelApiKey.Length} chars)";
+                : $"prefix={FormatKeyPrefix(settings.PanelApiKey)} ({settings.PanelApiKey.Length} chars)";
 
             CustomLogger.Info(
                 $"App settings loaded ({string.Join(" -> ", sources)}): ApiOnly={settings.ApiOnly}, ServerId={settings.ServerId}, WebUrl={settings.WebUrl}, PanelApiKey={keyStatus}");

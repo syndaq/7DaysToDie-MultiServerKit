@@ -209,6 +209,7 @@ namespace SdtdMultiServerKit
                     throw new Exception("The app settings can not be null.");
                 }
 
+                NormalizeAppSettings(appSettings);
                 ValidateAppSettings(appSettings);
                 AppSettings = appSettings;
                 AppSettingsPaths.LogLoadedSettings(appSettings, ModInstance.Path);
@@ -218,6 +219,14 @@ namespace SdtdMultiServerKit
             {
                 throw new Exception("Load appsettings failed.", ex);
             }
+        }
+
+        private static void NormalizeAppSettings(AppSettings appSettings)
+        {
+            appSettings.PanelApiKey = appSettings.PanelApiKey?.Trim() ?? string.Empty;
+            appSettings.ServerId = appSettings.ServerId?.Trim() ?? string.Empty;
+            appSettings.PanelUrl = appSettings.PanelUrl?.Trim() ?? string.Empty;
+            appSettings.WebUrl = appSettings.WebUrl?.Trim() ?? string.Empty;
         }
 
         private static void ValidateAppSettings(AppSettings appSettings)
