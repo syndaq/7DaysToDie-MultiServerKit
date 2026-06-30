@@ -65,16 +65,17 @@ namespace SdtdMultiServerKit
 
         internal static void LogLoadedSettings(AppSettings settings, string modPath)
         {
+            string defaultPath = DefaultConfigPath(modPath);
             string legacyPath = LegacyProductionConfigPath();
             string modProductionPath = ModProductionConfigPath(modPath);
-            var sources = new List<string> { "Config/appsettings.json" };
+            var sources = new List<string> { defaultPath };
             if (File.Exists(legacyPath))
             {
-                sources.Add("Managed/LSTY_Data/appsettings.json");
+                sources.Add(legacyPath);
             }
             if (File.Exists(modProductionPath))
             {
-                sources.Add("Mod/LSTY_Data/appsettings.json");
+                sources.Add(modProductionPath);
             }
 
             string keyStatus = string.IsNullOrWhiteSpace(settings.PanelApiKey)
@@ -87,7 +88,7 @@ namespace SdtdMultiServerKit
             if (File.Exists(modProductionPath) || File.Exists(legacyPath))
             {
                 CustomLogger.Info(
-                    "Runtime config overrides are active. Edit Mod/LSTY_Data/appsettings.json (and Managed/LSTY_Data/appsettings.json if present) — Config/appsettings.json alone is not enough after first run.");
+                    "Runtime config overrides are active — later paths win. Edit or delete the override file(s) above; Config/appsettings.json alone is not enough after first run.");
             }
         }
     }

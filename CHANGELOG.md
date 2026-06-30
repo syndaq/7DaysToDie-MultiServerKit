@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.0.13] - 2026-06-30
+
+### Fixed
+
+- Startup log now prints **full absolute paths** for every loaded appsettings file (the old "Managed/LSTY_Data" label was misleading).
+
 ## [1.0.12] - 2026-06-30
 
 ### Fixed
