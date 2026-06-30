@@ -82,7 +82,13 @@ namespace SdtdMultiServerKit
                 : $"set ({settings.PanelApiKey.Length} chars)";
 
             CustomLogger.Info(
-                $"App settings loaded ({string.Join(" -> ", sources)}): ApiOnly={settings.ApiOnly}, ServerId={settings.ServerId}, PanelApiKey={keyStatus}");
+                $"App settings loaded ({string.Join(" -> ", sources)}): ApiOnly={settings.ApiOnly}, ServerId={settings.ServerId}, WebUrl={settings.WebUrl}, PanelApiKey={keyStatus}");
+
+            if (File.Exists(modProductionPath) || File.Exists(legacyPath))
+            {
+                CustomLogger.Info(
+                    "Runtime config overrides are active. Edit Mod/LSTY_Data/appsettings.json (and Managed/LSTY_Data/appsettings.json if present) — Config/appsettings.json alone is not enough after first run.");
+            }
         }
     }
 }

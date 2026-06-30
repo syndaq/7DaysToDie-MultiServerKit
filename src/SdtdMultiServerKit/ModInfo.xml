@@ -4,6 +4,6 @@
 	<DisplayName value="7DaysToDie-MultiServerKit" />
 	<Description value="A multi-server management mod for 7 Days to Die dedicated servers. Provides RESTful APIs and a web management panel with shared player systems across server clusters. Works with both Linux and Windows." />
 	<Author value="syndaq" />
-		<Version value="1.0.11" />
+		<Version value="1.0.12" />
 	<Website value="https://github.com/syndaq/7DaysToDie-MultiServerKit" />
 </ModInfo>

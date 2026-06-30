@@ -4,6 +4,13 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.0.12] - 2026-06-30
+
+### Fixed
+
+- **ApiOnly panel reachability** — When `WebUrl` is `127.0.0.1`/`localhost`, the API now listens on all interfaces (`http://+:8888/`) so remote panels can connect.
+- **Config overrides** — Startup log now includes `WebUrl` and warns when override files (`Mod/LSTY_Data`, `Managed/LSTY_Data`) are overriding `Config/appsettings.json`.
+
 ## [1.0.11] - 2026-06-30
 
 ### Fixed

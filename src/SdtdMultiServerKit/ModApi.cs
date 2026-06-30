@@ -212,6 +212,7 @@ namespace SdtdMultiServerKit
                 ValidateAppSettings(appSettings);
                 AppSettings = appSettings;
                 AppSettingsPaths.LogLoadedSettings(appSettings, ModInstance.Path);
+                AppSettingsListenUrl.WarnIfPanelUnreachable(appSettings);
             }
             catch (Exception ex)
             {
@@ -238,9 +239,18 @@ namespace SdtdMultiServerKit
         {
             try
             {
-                string webUrl = AppSettings.WebUrl;
-                WebApp.Start<Startup>(webUrl);
-                CustomLogger.Info("SdtdMultiServerKit API Server running on " + webUrl);
+                string configuredWebUrl = AppSettings.WebUrl;
+                string listenUrl = AppSettingsListenUrl.Resolve(configuredWebUrl, AppSettings.ApiOnly);
+                WebApp.Start<Startup>(listenUrl);
+                if (!string.Equals(configuredWebUrl.TrimEnd('/'), listenUrl.TrimEnd('/'), StringComparison.OrdinalIgnoreCase))
+                {
+                    CustomLogger.Info(
+                        $"SdtdMultiServerKit API Server listening on {listenUrl} (WebUrl={configuredWebUrl})");
+                }
+                else
+                {
+                    CustomLogger.Info("SdtdMultiServerKit API Server running on " + configuredWebUrl);
+                }
             }
             catch (Exception ex)
             {
