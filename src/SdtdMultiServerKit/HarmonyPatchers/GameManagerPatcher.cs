@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Noemax.GZip;
+using SdtdMultiServerKit.Compat;
 using SdtdMultiServerKit.Managers;
 
 namespace SdtdMultiServerKit.HarmonyPatchers
@@ -46,10 +47,10 @@ namespace SdtdMultiServerKit.HarmonyPatchers
             World world = __instance.World;
             foreach (var info in _blocksToChange)
             {
-                var blockToChange = info.blockValue.Block;
+                var blockToChange = GameCompatBridge.BlockChangeBlockValue(info).Block;
                 if (blockToChange is BlockLandClaim || blockToChange is BlockSleepingBag)
                 {
-                    var blockPosition = info.pos;
+                    var blockPosition = GameCompatBridge.BlockChangePos(info);
                     int num = GameStats.GetInt(EnumGameStats.ScoreZombieKillMultiplier) >> 2;
                     int num2 = blockPosition.x - num;
                     int num3 = blockPosition.x + num;
@@ -66,7 +67,7 @@ namespace SdtdMultiServerKit.HarmonyPatchers
                             continue;
                         }
 
-                        info.blockValue = oldBlockValue;
+                        GameCompatBridge.SetBlockChangeBlockValue(info, oldBlockValue);
 
                         NetPackageSetBlock package = NetPackageManager.GetPackage<NetPackageSetBlock>().Setup(null, new List<BlockChangeInfo>() { info }, -1);
                         clientInfo.SendPackage(package);
@@ -118,11 +119,13 @@ namespace SdtdMultiServerKit.HarmonyPatchers
             {
                 if (ConfigManager.GlobalSettings.EnableTraderAreaProtection)
                 {
-                    if (world.IsWithinTraderArea(info.pos))
+                    var blockPos = GameCompatBridge.BlockChangePos(info);
+                    if (world.IsWithinTraderArea(blockPos))
                     {
-                        var tag = info.blockValue.Block.BlockTag;
+                        var blockValue = GameCompatBridge.BlockChangeBlockValue(info);
+                        var tag = blockValue.Block.BlockTag;
                         bool isDoorOrWindow = tag == BlockTags.Door || tag == BlockTags.ClosetDoor || tag == BlockTags.Window;
-                        if (isDoorOrWindow && info.blockValue.Equals(world.GetBlock(info.pos)))
+                        if (isDoorOrWindow && blockValue.Equals(world.GetBlock(blockPos)))
                         {
                             continue;
                         }
@@ -136,7 +139,7 @@ namespace SdtdMultiServerKit.HarmonyPatchers
 
                 if (ConfigManager.GlobalSettings.EnableLandClaimProtection)
                 {
-                    if (GameManager.Instance.World.CanPlaceBlockAt(info.pos, playerData, true) == false)
+                    if (GameManager.Instance.World.CanPlaceBlockAt(GameCompatBridge.BlockChangePos(info), playerData, true) == false)
                     {
                         message = ConfigManager.GlobalSettings.LandClaimProtectionTip;
                         goto B;
@@ -153,7 +156,7 @@ namespace SdtdMultiServerKit.HarmonyPatchers
                 // returned.Add(info);
 
                 returned ??= new List<BlockChangeInfo>();
-                returned.Add(new BlockChangeInfo(info.clrIdx, info.pos, world.GetBlock(info.pos)));
+                returned.Add(GameCompatBridge.CreateRestoreBlockChange(info, world.GetBlock(GameCompatBridge.BlockChangePos(info))));
 
                 _blocksToChange.Remove(info);
             }
@@ -188,7 +191,7 @@ namespace SdtdMultiServerKit.HarmonyPatchers
                     if (GameManager.Instance.World.CanPlaceBlockAt(pos, playerDataFromEntityID, true) == false)
                     {
                         returned ??= new List<BlockChangeInfo>();
-                        returned.Add(new BlockChangeInfo(__instance.clrIdx, pos, GameManager.Instance.World.GetBlock(pos)));
+                        returned.Add(GameCompatBridge.CreateRestoreBlockChange(pos, GameManager.Instance.World.GetBlock(pos), __instance));
 
                         __instance.ChangedBlockPositions.Remove(pos);
                         message = ConfigManager.GlobalSettings.LandClaimProtectionTip;

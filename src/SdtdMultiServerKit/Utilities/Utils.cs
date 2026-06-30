@@ -229,7 +229,9 @@
         {
             try
             {
-                var dict = caseInsensitive ? Localization.mDictionaryCaseInsensitive : Localization.mDictionary;
+                var dict = caseInsensitive
+                    ? Compat.GameCompatBridge.LocalizationDictionaryCaseInsensitive
+                    : Compat.GameCompatBridge.LocalizationDictionary;
                 if (dict.TryGetValue(key, out string[] values))
                 {
                     return values[(int)language] ?? string.Empty;

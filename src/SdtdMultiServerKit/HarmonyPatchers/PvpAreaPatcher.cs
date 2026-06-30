@@ -1,4 +1,5 @@
 using HarmonyLib;
+using SdtdMultiServerKit.Compat;
 using SdtdMultiServerKit.Managers;
 
 namespace SdtdMultiServerKit.HarmonyPatchers
@@ -118,7 +119,7 @@ namespace SdtdMultiServerKit.HarmonyPatchers
                     }
 
                     restored ??= new List<BlockChangeInfo>();
-                    restored.Add(new BlockChangeInfo(__instance.clrIdx, pos, GameManager.Instance.World.GetBlock(pos)));
+                    restored.Add(GameCompatBridge.CreateRestoreBlockChange(pos, GameManager.Instance.World.GetBlock(pos), __instance));
                     __instance.ChangedBlockPositions.Remove(pos);
                 }
 

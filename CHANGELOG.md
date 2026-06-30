@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.0.19] - 2026-06-30
+
+### Fixed
+
+- **7DTD v3.0 build-from-source** — TFP's publicizer renamed game fields to PascalCase properties (`BlockChangeInfo.pos` → `Pos`, `Localization.dictionary` → `mDictionary`, etc.). Added `GameCompatBridge` with reflection-based accessors so the mod **compiles against v2.6 or v3.0 server DLLs** and runs on both.
+
 ## [1.0.18] - 2026-06-30
 
 ### Fixed

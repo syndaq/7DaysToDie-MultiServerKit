@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using SdtdMultiServerKit.Compat;
 using SdtdMultiServerKit.Managers;
 
 namespace SdtdMultiServerKit.HarmonyPatchers
@@ -19,8 +20,8 @@ namespace SdtdMultiServerKit.HarmonyPatchers
                         if (position.Length == 3)
                         {
                             var pos = new UnityEngine.Vector3(float.Parse(position[0]), float.Parse(position[1]), float.Parse(position[2]));
-                            __instance.ecd.pos = pos;
-                            _player.InitLocation(pos, __instance.ecd.rot);
+                            GameCompatBridge.SetEntityCreationPos(__instance.ecd, pos);
+                            _player.InitLocation(pos, GameCompatBridge.EntityCreationRot(__instance.ecd));
                         }
                     }
                 }

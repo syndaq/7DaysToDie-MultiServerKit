@@ -18,7 +18,7 @@
         public IHttpActionResult GetLocalization(Language language)
         {
             string _language = language.ToString().ToLower();
-            var dict = Localization.dictionary;
+            var dict = Compat.GameCompatBridge.LocalizationDictionary;
             int languageIndex = Array.LastIndexOf(dict["KEY"], _language);
 
             if (languageIndex < 0)
@@ -53,7 +53,7 @@
         [ResponseType(typeof(string))]
         public string[] GetKnownLanguages()
         {
-            return Localization.dictionary["KEY"];
+            return Compat.GameCompatBridge.KnownLanguages;
         }
     }
 }

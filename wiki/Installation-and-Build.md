@@ -26,6 +26,7 @@ Required from `7DaysToDieServer_Data/Managed/`: `Assembly-CSharp.dll`, `0Harmony
 | MapRendering / WebServer | Separate mods: `Mods/TFP_MapRendering/`, `Mods/TFP_WebServer/` | **Merged into `Assembly-CSharp.dll`** — TFP map/web mod folders removed |
 | Building the mod | Sync script may copy `MapRendering.dll` / `WebServer.dll` (optional) | Only Managed DLLs needed |
 | Running the mod | One release zip works on both; map API resolved via reflection |
+| Building from source on v3.0 | Only Managed DLLs needed; `GameCompatBridge` handles renamed game APIs at compile and runtime |
 
 TFP [changeset 512](https://7dtd.illy.bz/changeset/512) (May 2026) moved WebServer, MapRendering, and HttpListener into the core game for v3.
 

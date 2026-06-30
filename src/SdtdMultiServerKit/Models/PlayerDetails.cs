@@ -11,7 +11,7 @@
         public PlayerDetails(PlayerDataFile playerDataFile, PersistentPlayerData persistentPlayerData, EntityPlayer? entityPlayer = null)
         {
             IsAdmin = GameManager.Instance.adminTools.Users.GetUserPermissionLevel(persistentPlayerData.PrimaryId) == 0;
-            Position = playerDataFile.ecd.pos.ToPosition();
+            Position = Compat.GameCompatBridge.EntityCreationPos(playerDataFile.ecd).ToPosition();
             LastSpawnPosition = playerDataFile.lastSpawnPosition.ToModel();
             LastLogin = persistentPlayerData.LastLogin;
             PlayerKills = playerDataFile.playerKills;
@@ -19,7 +19,7 @@
             Deaths = playerDataFile.deaths;
             Score = playerDataFile.score;
 
-            var stats = playerDataFile.ecd.stats;
+            var stats = Compat.GameCompatBridge.EntityCreationStats(playerDataFile.ecd);
             if(stats != null)
             {
                 Stats = new PlayerStats()
