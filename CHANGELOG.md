@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-06-30
+
+### Fixed
+
+- **Linux dedicated servers** — Removed Mapster (requires `System.Reflection.Emit` at mod init). Vendored Mono runtime DLLs are copied into every build output; mod preloads them on startup so `System.Web.Http` metadata works under Unity MonoBleedingEdge.
+
 ## [1.0.2] - 2026-06-30
 
 ### Fixed

@@ -3,7 +3,7 @@ using SdtdMultiServerKit.Data.Dtos;
 using SdtdMultiServerKit.Data.IRepositories;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Mapster;
+using SdtdMultiServerKit.Data.Mapping;
 using IceCoffee.SimpleCRUD;
 
 namespace SdtdMultiServerKit.WebApi.Controllers
@@ -34,7 +34,7 @@ namespace SdtdMultiServerKit.WebApi.Controllers
         [Route("")]
         public async Task<IEnumerable<CdKeyDto>> GetCdKeys()
         {
-            return (await _cdKeyRepository.GetAllAsync()).Adapt<IEnumerable<CdKeyDto>>();
+            return CdKeyMappings.ToDtos(await _cdKeyRepository.GetAllAsync());
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace SdtdMultiServerKit.WebApi.Controllers
                 return NotFound();
             }
 
-            return Ok(entity.Adapt<CdKey>());
+            return Ok(CdKeyMappings.ToDto(entity));
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace SdtdMultiServerKit.WebApi.Controllers
         [Route("")]
         public async Task<IHttpActionResult> CreateCdKey([FromBody] CdKeyCreateDto dto)
         {
-            var entity = dto.Adapt<CdKey>();
+            var entity = CdKeyMappings.ToEntity(dto);
             entity.CreatedAt = DateTime.Now;
             int id = await _cdKeyRepository.InsertAsync<int>(entity);
             var location = new Uri(Request.RequestUri, $"api/CdKey/{id}");
@@ -89,7 +89,7 @@ namespace SdtdMultiServerKit.WebApi.Controllers
                 return NotFound();
             }
 
-            dto.Adapt(entity);
+            CdKeyMappings.ApplyUpdate(dto, entity);
             await _cdKeyRepository.UpdateAsync(entity);
 
             return Ok();

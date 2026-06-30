@@ -21,7 +21,7 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageProjectUrl>https://github.com/syndaq/7DaysToDie-MultiServerKit</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/syndaq/7DaysToDie-MultiServerKit</RepositoryUrl>
-		<Version>1.0.2</Version>
+		<Version>1.0.3</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -42,7 +42,6 @@
 		<PackageReference Include="IceCoffee.Common" Version="1.2.4" />
 		<PackageReference Include="IceCoffee.Cron" Version="1.0.6" />
 		<PackageReference Include="IceCoffee.SimpleCRUD" Version="1.5.2" />
-		<PackageReference Include="Mapster" Version="7.3.0" />
 		<PackageReference Include="Microsoft.AspNet.WebApi.OwinSelfHost" Version="5.3.0" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.3" />
@@ -94,6 +93,13 @@
 		<None Update="Assets\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="3rdparty-binaries\linux-mono\System.ComponentModel.DataAnnotations.dll" CopyToOutputDirectory="PreserveNewest" Link="System.ComponentModel.DataAnnotations.dll" />
+		<None Include="3rdparty-binaries\linux-mono\System.Reflection.Emit.dll" CopyToOutputDirectory="PreserveNewest" Link="System.Reflection.Emit.dll" />
+		<None Include="3rdparty-binaries\linux-mono\System.Reflection.Emit.ILGeneration.dll" CopyToOutputDirectory="PreserveNewest" Link="System.Reflection.Emit.ILGeneration.dll" />
+		<None Include="3rdparty-binaries\linux-mono\System.Reflection.Emit.Lightweight.dll" CopyToOutputDirectory="PreserveNewest" Link="System.Reflection.Emit.Lightweight.dll" />
 	</ItemGroup>
 
 	<ItemGroup>

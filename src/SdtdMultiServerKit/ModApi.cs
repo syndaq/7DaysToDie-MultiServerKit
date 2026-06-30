@@ -75,6 +75,7 @@ namespace SdtdMultiServerKit
             try
             {
                 ModInstance = modInstance;
+                RegisterMonoFrameworkAssemblies();
                 MainThreadSyncContext = SynchronizationContext.Current;
                 CmdExecuteDelegate = new ClientInfo()
                 {
@@ -146,6 +147,50 @@ namespace SdtdMultiServerKit
                 catch (Exception ex)
                 {
                     CustomLogger.Error(ex, "Load plugin: " + assemblyFile + " failed.");
+                }
+            }
+        }
+
+        private static bool _monoFrameworkAssembliesRegistered;
+
+        private static void RegisterMonoFrameworkAssemblies()
+        {
+            if (_monoFrameworkAssembliesRegistered)
+            {
+                return;
+            }
+
+            _monoFrameworkAssembliesRegistered = true;
+            string modPath = ModInstance.Path;
+
+            AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
+            {
+                string name = new AssemblyName(args.Name).Name ?? string.Empty;
+                string path = Path.Combine(modPath, name + ".dll");
+                return File.Exists(path) ? Assembly.LoadFrom(path) : null;
+            };
+
+            foreach (string dll in new[]
+            {
+                "System.ComponentModel.DataAnnotations.dll",
+                "System.Reflection.Emit.dll",
+                "System.Reflection.Emit.ILGeneration.dll",
+                "System.Reflection.Emit.Lightweight.dll",
+            })
+            {
+                string path = Path.Combine(modPath, dll);
+                if (!File.Exists(path))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    Assembly.LoadFrom(path);
+                }
+                catch (Exception ex)
+                {
+                    CustomLogger.Warn("Could not preload " + dll + ": " + ex.Message);
                 }
             }
         }

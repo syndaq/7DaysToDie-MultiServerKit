@@ -3,7 +3,7 @@ using SdtdMultiServerKit.Data.Dtos;
 using SdtdMultiServerKit.Data.IRepositories;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Mapster;
+using SdtdMultiServerKit.Data.Mapping;
 
 namespace SdtdMultiServerKit.WebApi.Controllers
 {
@@ -29,7 +29,7 @@ namespace SdtdMultiServerKit.WebApi.Controllers
         [Route("")]
         public async Task<IEnumerable<CdKeyRedeemRecordDto>> GetCdKeyRedeemRecords()
         {
-            return (await _cdKeyRedeemRecordRepository.GetAllAsync()).Adapt<IEnumerable<CdKeyRedeemRecordDto>>();
+            return CdKeyMappings.ToDtos(await _cdKeyRedeemRecordRepository.GetAllAsync());
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace SdtdMultiServerKit.WebApi.Controllers
                 return NotFound();
             }
 
-            return Ok(entity.Adapt<CdKeyRedeemRecord>());
+            return Ok(CdKeyMappings.ToDto(entity));
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace SdtdMultiServerKit.WebApi.Controllers
         [Route("")]
         public async Task<IHttpActionResult> CreateCdKeyRedeemRecord([FromBody] CdKeyRedeemRecordCreateDto dto)
         {
-            var entity = dto.Adapt<CdKeyRedeemRecord>();
+            var entity = CdKeyMappings.ToEntity(dto);
             entity.CreatedAt = DateTime.Now;
             int id = await _cdKeyRedeemRecordRepository.InsertAsync<int>(entity);
             var location = new Uri(Request.RequestUri, $"api/CdKeyRedeemRecord/{id}");
@@ -84,7 +84,7 @@ namespace SdtdMultiServerKit.WebApi.Controllers
                 return NotFound();
             }
 
-            dto.Adapt(entity);
+            CdKeyMappings.ApplyUpdate(dto, entity);
             await _cdKeyRedeemRecordRepository.UpdateAsync(entity);
 
             return Ok();
