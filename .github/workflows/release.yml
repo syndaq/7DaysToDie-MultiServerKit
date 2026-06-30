@@ -22,22 +22,25 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Build Release
-        run: dotnet build src/SdtdMultiServerKit/SdtdMultiServerKit.csproj -c Release --no-incremental
+        run: dotnet build src/SdtdMultiServerKit/SdtdMultiServerKit.csproj -c Release --no-incremental -v minimal
+
+      - name: Locate build output
+        id: builddir
+        run: |
+          BUILD_DIR=$(find src/SdtdMultiServerKit/bin -path '*/Release/net48' -type d 2>/dev/null | head -1)
+          if [[ -z "$BUILD_DIR" || ! -f "$BUILD_DIR/SdtdMultiServerKit.dll" ]]; then
+            echo "Could not find Release/net48 build output with SdtdMultiServerKit.dll" >&2
+            find src/SdtdMultiServerKit/bin -type f -name 'SdtdMultiServerKit.dll' 2>/dev/null || true
+            exit 1
+          fi
+          echo "dir=$BUILD_DIR" >> "$GITHUB_OUTPUT"
+          echo "Using build output: $BUILD_DIR"
 
       - name: Package mod zip
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           ARCHIVE="SdtdMultiServerKit-${VERSION}.zip"
-          BUILD_DIR="src/SdtdMultiServerKit/bin/Release/net48"
-          if [[ ! -d "$BUILD_DIR" ]]; then
-            BUILD_DIR="src/SdtdMultiServerKit/bin/x64/Release/net48"
-          fi
-          if [[ ! -d "$BUILD_DIR" ]]; then
-            echo "Build output not found" >&2
-            find src/SdtdMultiServerKit/bin -maxdepth 4 -type d
-            exit 1
-          fi
-          cd "$BUILD_DIR"
+          cd "${{ steps.builddir.outputs.dir }}"
           zip -r "${GITHUB_WORKSPACE}/${ARCHIVE}" . -x "*.pdb"
           echo "ARCHIVE=${ARCHIVE}" >> "${GITHUB_ENV}"
 
@@ -56,7 +59,9 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
           body_path: release-notes.md
           files: ${{ env.ARCHIVE }}
           generate_release_notes: false
+          overwrite_files: true
