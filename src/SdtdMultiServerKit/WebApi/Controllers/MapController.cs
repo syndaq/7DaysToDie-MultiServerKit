@@ -1,6 +1,4 @@
-﻿using MapRendering;
-
-namespace SdtdMultiServerKit.WebApi.Controllers
+﻿namespace SdtdMultiServerKit.WebApi.Controllers
 {
     /// <summary>
     /// 
@@ -17,10 +15,10 @@ namespace SdtdMultiServerKit.WebApi.Controllers
         [Route("Info")]
         public MapInfo MapInfo()
         {
-            var mapInfo = new MapInfo() 
-            { 
-                BlockSize = MapRendering.Constants.MapBlockSize, 
-                MaxZoom = MapRendering.Constants.Zoomlevels - 1 
+            var mapInfo = new MapInfo()
+            {
+                BlockSize = MapRendering.MapRenderingBridge.MapBlockSize,
+                MaxZoom = MapRendering.MapRenderingBridge.ZoomLevels - 1,
             };
             return mapInfo;
         }
@@ -36,19 +34,24 @@ namespace SdtdMultiServerKit.WebApi.Controllers
         [Route("Tile/{z:int}/{x:int}/{y:int}")]
         public IHttpActionResult MapTile(int z, int x, int y)
         {
-            string fileName = MapRendering.Constants.MapDirectory + $"/{z}/{x}/{y}.png";
-            
+            string fileName = MapRendering.MapRenderingBridge.MapDirectory + $"/{z}/{x}/{y}.png";
+
             if (File.Exists(fileName))
             {
                 return new FileStreamResult(File.OpenRead(fileName), "image/png");
             }
 
-            if(ModApi.MapTileCache == null)
+            if (ModApi.MapTileCache == null)
             {
                 return NotFound();
             }
 
-            byte[] data = ModApi.MapTileCache.GetFileContent(fileName);
+            byte[]? data = MapRendering.MapRenderingBridge.GetFileContent(ModApi.MapTileCache, fileName);
+            if (data == null || data.Length == 0)
+            {
+                return NotFound();
+            }
+
             return new FileContentResult(data, "image/png");
         }
 
@@ -74,7 +77,7 @@ namespace SdtdMultiServerKit.WebApi.Controllers
         {
             ModApi.MainThreadSyncContext.Post((state) =>
             {
-                MapRenderer.Instance.RenderFullMap();
+                MapRendering.MapRenderingBridge.RenderFullMap();
             }, null);
 
             return Ok();

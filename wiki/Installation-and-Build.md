@@ -9,13 +9,25 @@ cd 7DaysToDie-MultiServerKit
 
 ## 2. Provide game binaries
 
-Copy required DLLs from your 7DTD dedicated server into:
+From your **dedicated server install**, run:
 
-```
-src/SdtdMultiServerKit/7dtd-binaries/
+```bash
+bash scripts/sync-7dtd-binaries.sh /path/to/7DaysToDieServer
 ```
 
-Required files include `Assembly-CSharp.dll`, `0Harmony.dll`, `UnityEngine.CoreModule.dll`, `LogLibrary.dll`, `MapRendering.dll`, `WebServer.dll`, and others referenced in `SdtdMultiServerKit.csproj`.
+This copies reference DLLs into `src/SdtdMultiServerKit/7dtd-binaries/`.
+
+Required from `7DaysToDieServer_Data/Managed/`: `Assembly-CSharp.dll`, `0Harmony.dll`, `UnityEngine.CoreModule.dll`, `LogLibrary.dll`, and others referenced in `SdtdMultiServerKit.csproj`.
+
+### Game version 2.6 vs 3.0
+
+| | v2.6 | v3.0+ |
+|---|------|-------|
+| MapRendering / WebServer | Separate mods: `Mods/TFP_MapRendering/`, `Mods/TFP_WebServer/` | **Merged into `Assembly-CSharp.dll`** — TFP map/web mod folders removed |
+| Building the mod | Sync script may copy `MapRendering.dll` / `WebServer.dll` (optional) | Only Managed DLLs needed |
+| Running the mod | One release zip works on both; map API resolved via reflection |
+
+TFP [changeset 512](https://7dtd.illy.bz/changeset/512) (May 2026) moved WebServer, MapRendering, and HttpListener into the core game for v3.
 
 Place `websocket-sharp.dll` in `src/SdtdMultiServerKit/3rdparty-binaries/`.
 

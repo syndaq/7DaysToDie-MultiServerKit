@@ -7,7 +7,6 @@ using SdtdMultiServerKit.Triggers;
 using SdtdMultiServerKit.WebApi;
 using System.Text;
 using WebSocketSharp.Server;
-using MapRendering;
 using Dapper;
 using IceCoffee.SimpleCRUD.SqliteTypeHandlers;
 using IceCoffee.SimpleCRUD;
@@ -312,8 +311,7 @@ namespace SdtdMultiServerKit
         /// <summary>
         /// Get the map tile cache.
         /// </summary>
-        /// <returns>The map tile cache.</returns>
-        internal static MapTileCache? MapTileCache { private set; get; }
+        internal static object? MapTileCache { private set; get; }
         private static void RegisterModEventHandlers()
         {
             try
@@ -373,17 +371,19 @@ namespace SdtdMultiServerKit
 
                 try
                 {
-                    string[] files = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Mods"), "MapRendering.dll", SearchOption.AllDirectories);
-                    if (files.Length == 0)
+                    MapRendering.MapRenderingBridge.Initialize();
+                    if (!MapRendering.MapRenderingBridge.IsAvailable)
                     {
-                        CustomLogger.Warn("It is detected that TFP Mod is not installed, some functions may not be available.");
+                        CustomLogger.Warn("Map rendering API not found. Map tiles and render endpoints may be unavailable (expected on some installs until the world is ready).");
                     }
-
-                    MapTileCache = (MapTileCache)MapRenderer.GetTileCache();
+                    else
+                    {
+                        MapTileCache = MapRendering.MapRenderingBridge.GetTileCache();
+                    }
                 }
                 catch (Exception ex)
                 {
-                    CustomLogger.Error(ex, "Load map tile cache failed, Please do not delete the default mod, You can verify the integrity of the game to solve this problem.");
+                    CustomLogger.Error(ex, "Load map tile cache failed. On v3.0+ MapRendering is built into the game; on v2.6 ensure TFP_MapRendering is installed.");
                 }
             }
             finally

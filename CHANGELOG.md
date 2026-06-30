@@ -4,7 +4,13 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
-## [1.0.13] - 2026-06-30
+## [1.0.18] - 2026-06-30
+
+### Fixed
+
+- **7DTD v3.0 compatibility** — TFP merged `MapRendering` and `WebServer` into `Assembly-CSharp.dll`; separate `Mods/TFP_MapRendering` / `Mods/TFP_WebServer` are gone. The mod no longer references those assemblies at load time and resolves map APIs via reflection, so **one build runs on v2.6 and v3.0+**.
+- Added `scripts/sync-7dtd-binaries.sh` to copy build reference DLLs from a dedicated server (v3.0 no longer requires `MapRendering.dll` / `WebServer.dll` in `7dtd-binaries/`).
+
 
 ### Fixed
 

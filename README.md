@@ -64,13 +64,15 @@ cd 7DaysToDie-MultiServerKit
 
 ### 2. Provide game binaries
 
-Copy the required DLLs from your 7DTD dedicated server installation into:
+From your dedicated server install:
 
-```
-src/SdtdMultiServerKit/7dtd-binaries/
+```bash
+bash scripts/sync-7dtd-binaries.sh /path/to/7DaysToDieServer
 ```
 
-Required files include `Assembly-CSharp.dll`, `0Harmony.dll`, `UnityEngine.CoreModule.dll`, `LogLibrary.dll`, `MapRendering.dll`, `WebServer.dll`, and others referenced in `SdtdMultiServerKit.csproj`.
+This copies reference DLLs into `src/SdtdMultiServerKit/7dtd-binaries/`.
+
+**v2.6 vs v3.0:** On v3.0+, TFP merged `MapRendering` and `WebServer` into `Assembly-CSharp.dll` — they are no longer separate files under `Mods/TFP_*`. The sync script handles both; the mod resolves map APIs at runtime via reflection so **one release works on 2.6 and 3.0**.
 
 Also place `websocket-sharp.dll` in `src/SdtdMultiServerKit/3rdparty-binaries/`.
 

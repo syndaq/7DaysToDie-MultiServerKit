@@ -21,7 +21,7 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageProjectUrl>https://github.com/syndaq/7DaysToDie-MultiServerKit</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/syndaq/7DaysToDie-MultiServerKit</RepositoryUrl>
-		<Version>1.0.13</Version>
+		<Version>1.0.18</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -143,14 +143,6 @@
 		<Reference Include="Noemax.GZip">
 			<Private>false</Private>
 			<HintPath>7dtd-binaries\Noemax.GZip.dll</HintPath>
-		</Reference>
-		<Reference Include="MapRendering">
-			<Private>false</Private>
-			<HintPath>7dtd-binaries\MapRendering.dll</HintPath>
-		</Reference>
-		<Reference Include="WebServer">
-			<Private>false</Private>
-			<HintPath>7dtd-binaries\WebServer.dll</HintPath>
 		</Reference>
 		<Reference Include="com.rlabrecque.steamworks.net">
 			<Private>false</Private>
