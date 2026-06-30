@@ -4,6 +4,16 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-06-30
+
+### Fixed
+
+- **Linux dedicated servers** — Register framework assembly resolution when `SdtdMultiServerKit.dll` loads (before `System.Web.Http`), search the game's `7DaysToDieServer_Data/Managed` folder (Linux dedicated servers do not ship `MonoBleedingEdge/lib/mono`), and bundle the game's own `System.ComponentModel.DataAnnotations.dll` under `Framework/` (not the mod root). Ubuntu `mono-devel` copies are a different build and fail with `Invalid Image`.
+
+### Note
+
+- Fix invalid JSON in `LSTY_Data/appsettings.json` if deploy fails at config load — every property except the last needs a trailing comma.
+
 ## [1.0.4] - 2026-06-30
 
 ### Fixed

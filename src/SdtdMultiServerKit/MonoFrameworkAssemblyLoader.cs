@@ -1,11 +1,12 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace SdtdMultiServerKit
 {
     /// <summary>
-    /// Resolves Mono framework assemblies from the game's MonoBleedingEdge tree.
-    /// Do not place these DLLs in the mod root — 7DTD auto-loads every *.dll there and
-    /// Ubuntu/debian mono-devel copies fail with Invalid Image under Unity MonoBleedingEdge.
+    /// Resolves Mono framework assemblies from the game's Managed folder and mod Framework/.
+    /// Do not place these DLLs in the mod root — 7DTD auto-loads every *.dll there.
+    /// Ubuntu/debian mono-devel copies are not the same as the game's Managed assemblies.
     /// </summary>
     internal static class MonoFrameworkAssemblyLoader
     {
@@ -19,6 +20,24 @@ namespace SdtdMultiServerKit
             "System.Reflection.Emit.ILGeneration",
             "System.Reflection.Emit.Lightweight",
         };
+
+        [ModuleInitializer]
+        internal static void Initialize()
+        {
+            string? modDll = Assembly.GetExecutingAssembly().Location;
+            if (string.IsNullOrEmpty(modDll))
+            {
+                return;
+            }
+
+            string? modPath = Path.GetDirectoryName(modDll);
+            if (string.IsNullOrEmpty(modPath))
+            {
+                return;
+            }
+
+            Register(modPath);
+        }
 
         internal static void Register(string modPath)
         {
@@ -58,31 +77,66 @@ namespace SdtdMultiServerKit
                 yield return framework;
             }
 
-            string serverRoot = Path.GetFullPath(Path.Combine(modPath, "..", ".."));
-            string dataDir = Path.Combine(serverRoot, "7DaysToDieServer_Data");
-            string monoRoot = Path.Combine(dataDir, "MonoBleedingEdge", "lib", "mono");
-
-            foreach (string sub in new[] { "4.5-api", "4.5", "4.0-api", "4.0" })
+            foreach (string dataDir in GetGameDataDirectories(modPath))
             {
-                string dir = Path.Combine(monoRoot, sub);
-                if (!Directory.Exists(dir))
+                string managed = Path.Combine(dataDir, "Managed");
+                if (Directory.Exists(managed))
+                {
+                    yield return managed;
+                }
+
+                string monoRoot = Path.Combine(dataDir, "MonoBleedingEdge", "lib", "mono");
+                if (!Directory.Exists(monoRoot))
                 {
                     continue;
                 }
 
-                yield return dir;
-
-                string facades = Path.Combine(dir, "Facades");
-                if (Directory.Exists(facades))
+                foreach (string sub in new[]
                 {
-                    yield return facades;
+                    "unityjit-linux-x86_64",
+                    "unityjit",
+                    "unityaot-linux-x86_64",
+                    "unityaot",
+                    "4.5-api",
+                    "4.5",
+                    "4.0-api",
+                    "4.0",
+                })
+                {
+                    string dir = Path.Combine(monoRoot, sub);
+                    if (!Directory.Exists(dir))
+                    {
+                        continue;
+                    }
+
+                    yield return dir;
+
+                    string facades = Path.Combine(dir, "Facades");
+                    if (Directory.Exists(facades))
+                    {
+                        yield return facades;
+                    }
                 }
             }
+        }
 
-            string managed = Path.Combine(dataDir, "Managed");
-            if (Directory.Exists(managed))
+        private static IEnumerable<string> GetGameDataDirectories(string modPath)
+        {
+            var candidates = new[]
             {
-                yield return managed;
+                Path.Combine(modPath, "..", "..", "7DaysToDieServer_Data"),
+                Path.Combine(modPath, "..", "..", "..", "7DaysToDieServer_Data"),
+                Path.Combine(AppContext.BaseDirectory, "7DaysToDieServer_Data"),
+            };
+
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (string candidate in candidates)
+            {
+                string fullPath = Path.GetFullPath(candidate);
+                if (seen.Add(fullPath) && Directory.Exists(fullPath))
+                {
+                    yield return fullPath;
+                }
             }
         }
 
@@ -111,17 +165,40 @@ namespace SdtdMultiServerKit
                     Assembly? asm = TryLoadAssembly(name);
                     if (asm != null)
                     {
-                        CustomLogger.Info("Preloaded framework assembly {0} from {1}", name, asm.Location);
+                        LogBootstrap("Preloaded framework assembly {0} from {1}", name, asm.Location);
                     }
-                    else
+                    else if (string.Equals(name, "System.ComponentModel.DataAnnotations", StringComparison.OrdinalIgnoreCase))
                     {
-                        CustomLogger.Warn("Framework assembly not found on disk: {0}", name);
+                        LogBootstrap(
+                            "Framework assembly not found on disk: {0}. Searched: {1}",
+                            name,
+                            string.Join(", ", SearchDirectories));
                     }
                 }
                 catch (Exception ex)
                 {
-                    CustomLogger.Warn("Could not preload {0}: {1}", name, ex.Message);
+                    LogBootstrap("Could not preload {0}: {1}", name, ex.Message);
                 }
+            }
+        }
+
+        private static void LogBootstrap(string message, params object[] args)
+        {
+            try
+            {
+                message = CustomLogger.Prefix + message;
+                if (args.Length > 0)
+                {
+                    Log.Out(message, args);
+                }
+                else
+                {
+                    Log.Out(message);
+                }
+            }
+            catch
+            {
+                // Log may not be ready during very early assembly load.
             }
         }
 
@@ -154,7 +231,7 @@ namespace SdtdMultiServerKit
                 }
                 catch (Exception ex)
                 {
-                    CustomLogger.Warn("Failed to load {0}: {1}", path, ex.Message);
+                    LogBootstrap("Failed to load {0}: {1}", path, ex.Message);
                 }
             }
 
