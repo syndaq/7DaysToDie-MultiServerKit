@@ -21,7 +21,7 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageProjectUrl>https://github.com/syndaq/7DaysToDie-MultiServerKit</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/syndaq/7DaysToDie-MultiServerKit</RepositoryUrl>
-		<Version>1.0.7</Version>
+		<Version>1.0.8</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -72,8 +72,8 @@
 	</Target>-->
 	
 	<ItemGroup>
-		<None Include="$(PkgSQLitePCLRaw_lib_e_sqlite3)\runtimes\linux-x64\native\libe_sqlite3.so" Visible="false" CopyToOutputDirectory="PreserveNewest" />
-		<None Include="$(PkgSQLitePCLRaw_lib_e_sqlite3)\runtimes\win-x64\native\e_sqlite3.dll" Visible="false" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="$(PkgSQLitePCLRaw_lib_e_sqlite3)\runtimes\linux-x64\native\libe_sqlite3.so" Visible="false" CopyToOutputDirectory="PreserveNewest" TargetPath="Native\linux-x64\libe_sqlite3.so" Link="Native\linux-x64\libe_sqlite3.so" />
+		<None Include="$(PkgSQLitePCLRaw_lib_e_sqlite3)\runtimes\win-x64\native\e_sqlite3.dll" Visible="false" CopyToOutputDirectory="PreserveNewest" TargetPath="Native\win-x64\e_sqlite3.dll" Link="Native\win-x64\e_sqlite3.dll" />
 	</ItemGroup>
 
 	<ItemGroup>

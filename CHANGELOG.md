@@ -4,6 +4,17 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.0.8] - 2026-06-30
+
+### Fixed
+
+- **Linux mod load** — Move native SQLite binaries to `Native/` (`Native/linux-x64/libe_sqlite3.so`, `Native/win-x64/e_sqlite3.dll`). v1.0.7 placed `e_sqlite3.dll` in the mod root; 7DTD auto-loads every `*.dll` there and aborts with `Invalid Image`, so `SdtdMultiServerKit` never initialized.
+
+### Note
+
+- After upgrading from v1.0.7, delete leftover native files from the mod root:
+  `e_sqlite3.dll`, `libe_sqlite3.so` in `Mods/SdtdMultiServerKit/` (not in `Native/`).
+
 ## [1.0.7] - 2026-06-30
 
 ### Fixed
